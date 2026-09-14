@@ -1,6 +1,6 @@
 # Event Recommendation Agent
 
-> **What this is.** I started this alongside my employer's AI training sandbox while
+> **What this is:** I started this alongside my employer's AI training sandbox while
 > studying for the AWS AI certification, then kept extending it on my own to learn
 > agentic AI fundamentals hands-on: tool calling, guardrails, fallback design, and
 > LangGraph. It's a learning project, not a production system, and the scope reflects
