@@ -1,0 +1,1502 @@
+[
+  {
+    "id": "e001",
+    "name": "Urban Family Fair",
+    "genre": "Family",
+    "date": "2026-10-29",
+    "venue": "Union Square Stage",
+    "price": 10,
+    "popularity_score": 85,
+    "tickets_sold": 4930
+  },
+  {
+    "id": "e002",
+    "name": "Quiet Theater One-Act Festival",
+    "genre": "Theater",
+    "date": "2026-10-29",
+    "venue": "Union Square Stage",
+    "price": 45,
+    "popularity_score": 76,
+    "tickets_sold": 4413
+  },
+  {
+    "id": "e003",
+    "name": "Modern Film Double Feature",
+    "genre": "Film",
+    "date": "2027-01-02",
+    "venue": "The Underground",
+    "price": 25,
+    "popularity_score": 61,
+    "tickets_sold": 2455
+  },
+  {
+    "id": "e004",
+    "name": "Midnight Theater Play",
+    "genre": "Theater",
+    "date": "2026-12-27",
+    "venue": "Lakeside Gardens",
+    "price": 25,
+    "popularity_score": 85,
+    "tickets_sold": 4801
+  },
+  {
+    "id": "e005",
+    "name": "Underground Dance Recital",
+    "genre": "Dance",
+    "date": "2026-10-20",
+    "venue": "The Warehouse",
+    "price": 75,
+    "popularity_score": 86,
+    "tickets_sold": 4102
+  },
+  {
+    "id": "e006",
+    "name": "Summer Sports League Night",
+    "genre": "Sports",
+    "date": "2026-09-30",
+    "venue": "The Grand Hall",
+    "price": 35,
+    "popularity_score": 34,
+    "tickets_sold": 1241
+  },
+  {
+    "id": "e007",
+    "name": "Electric Comedy Standup Hour",
+    "genre": "Comedy",
+    "date": "2026-12-22",
+    "venue": "Skyline Rooftop",
+    "price": 10,
+    "popularity_score": 57,
+    "tickets_sold": 3079
+  },
+  {
+    "id": "e008",
+    "name": "Wild Dance Battle",
+    "genre": "Dance",
+    "date": "2027-01-14",
+    "venue": "Old Mill Brewery",
+    "price": 45,
+    "popularity_score": 26,
+    "tickets_sold": 767
+  },
+  {
+    "id": "e009",
+    "name": "Quiet Music Showcase",
+    "genre": "Music",
+    "date": "2026-09-17",
+    "venue": "The Underground",
+    "price": 20,
+    "popularity_score": 71,
+    "tickets_sold": 4617
+  },
+  {
+    "id": "e010",
+    "name": "Classic Theater Stage Reading",
+    "genre": "Theater",
+    "date": "2026-10-20",
+    "venue": "Civic Center",
+    "price": 0,
+    "popularity_score": 31,
+    "tickets_sold": 1575
+  },
+  {
+    "id": "e011",
+    "name": "Quiet Music Fest",
+    "genre": "Music",
+    "date": "2026-10-01",
+    "venue": "Sunset Amphitheater",
+    "price": 45,
+    "popularity_score": 54,
+    "tickets_sold": 1927
+  },
+  {
+    "id": "e012",
+    "name": "Golden Family Fair",
+    "genre": "Family",
+    "date": "2026-10-06",
+    "venue": "The Loft",
+    "price": 25,
+    "popularity_score": 26,
+    "tickets_sold": 843
+  },
+  {
+    "id": "e013",
+    "name": "Grand Music Tour Stop",
+    "genre": "Music",
+    "date": "2026-09-29",
+    "venue": "Harbor View Hall",
+    "price": 15,
+    "popularity_score": 37,
+    "tickets_sold": 1421
+  },
+  {
+    "id": "e014",
+    "name": "Midnight Film Screening",
+    "genre": "Film",
+    "date": "2026-11-03",
+    "venue": "Downtown Pavilion",
+    "price": 15,
+    "popularity_score": 32,
+    "tickets_sold": 1748
+  },
+  {
+    "id": "e015",
+    "name": "Grand Dance Showcase",
+    "genre": "Dance",
+    "date": "2026-10-10",
+    "venue": "Riverside Arena",
+    "price": 150,
+    "popularity_score": 74,
+    "tickets_sold": 3331
+  },
+  {
+    "id": "e016",
+    "name": "Local Art Exhibit",
+    "genre": "Art",
+    "date": "2027-02-02",
+    "venue": "The Underground",
+    "price": 150,
+    "popularity_score": 16,
+    "tickets_sold": 356
+  },
+  {
+    "id": "e017",
+    "name": "Classic Family Carnival",
+    "genre": "Family",
+    "date": "2026-11-12",
+    "venue": "The Loft",
+    "price": 15,
+    "popularity_score": 74,
+    "tickets_sold": 4371
+  },
+  {
+    "id": "e018",
+    "name": "Local Sports League Night",
+    "genre": "Sports",
+    "date": "2027-01-30",
+    "venue": "Sunset Amphitheater",
+    "price": 15,
+    "popularity_score": 64,
+    "tickets_sold": 2472
+  },
+  {
+    "id": "e019",
+    "name": "Indie Comedy Night",
+    "genre": "Comedy",
+    "date": "2026-11-25",
+    "venue": "Skyline Rooftop",
+    "price": 0,
+    "popularity_score": 55,
+    "tickets_sold": 3581
+  },
+  {
+    "id": "e020",
+    "name": "Golden Food & Drink Tasting",
+    "genre": "Food & Drink",
+    "date": "2026-09-18",
+    "venue": "Riverside Arena",
+    "price": 100,
+    "popularity_score": 35,
+    "tickets_sold": 2045
+  },
+  {
+    "id": "e021",
+    "name": "Classic Comedy Showdown",
+    "genre": "Comedy",
+    "date": "2026-12-22",
+    "venue": "Union Square Stage",
+    "price": 75,
+    "popularity_score": 49,
+    "tickets_sold": 2985
+  },
+  {
+    "id": "e022",
+    "name": "Neon Film Premiere",
+    "genre": "Film",
+    "date": "2026-10-19",
+    "venue": "Union Square Stage",
+    "price": 10,
+    "popularity_score": 57,
+    "tickets_sold": 2196
+  },
+  {
+    "id": "e023",
+    "name": "Urban Art Opening",
+    "genre": "Art",
+    "date": "2026-10-13",
+    "venue": "Sunset Amphitheater",
+    "price": 100,
+    "popularity_score": 76,
+    "tickets_sold": 3899
+  },
+  {
+    "id": "e024",
+    "name": "Neon Tech Demo Day",
+    "genre": "Tech",
+    "date": "2027-02-05",
+    "venue": "The Grand Hall",
+    "price": 45,
+    "popularity_score": 30,
+    "tickets_sold": 1577
+  },
+  {
+    "id": "e025",
+    "name": "Summer Tech Meetup",
+    "genre": "Tech",
+    "date": "2026-11-12",
+    "venue": "Downtown Pavilion",
+    "price": 60,
+    "popularity_score": 74,
+    "tickets_sold": 3912
+  },
+  {
+    "id": "e026",
+    "name": "Underground Music Showcase",
+    "genre": "Music",
+    "date": "2026-11-21",
+    "venue": "The Loft",
+    "price": 45,
+    "popularity_score": 25,
+    "tickets_sold": 73
+  },
+  {
+    "id": "e027",
+    "name": "Indie Music Live",
+    "genre": "Music",
+    "date": "2027-01-16",
+    "venue": "Skyline Rooftop",
+    "price": 15,
+    "popularity_score": 74,
+    "tickets_sold": 3261
+  },
+  {
+    "id": "e028",
+    "name": "Grand Sports League Night",
+    "genre": "Sports",
+    "date": "2026-10-08",
+    "venue": "Maple Street Theater",
+    "price": 25,
+    "popularity_score": 68,
+    "tickets_sold": 4552
+  },
+  {
+    "id": "e029",
+    "name": "Local Tech Demo Day",
+    "genre": "Tech",
+    "date": "2026-12-03",
+    "venue": "The Warehouse",
+    "price": 75,
+    "popularity_score": 68,
+    "tickets_sold": 3316
+  },
+  {
+    "id": "e030",
+    "name": "Modern Art Installation",
+    "genre": "Art",
+    "date": "2026-10-31",
+    "venue": "Harbor View Hall",
+    "price": 10,
+    "popularity_score": 27,
+    "tickets_sold": 642
+  },
+  {
+    "id": "e031",
+    "name": "Neon Theater Play",
+    "genre": "Theater",
+    "date": "2026-12-30",
+    "venue": "The Underground",
+    "price": 60,
+    "popularity_score": 54,
+    "tickets_sold": 2922
+  },
+  {
+    "id": "e032",
+    "name": "Grand Dance Battle",
+    "genre": "Dance",
+    "date": "2027-01-12",
+    "venue": "Skyline Rooftop",
+    "price": 75,
+    "popularity_score": 61,
+    "tickets_sold": 3888
+  },
+  {
+    "id": "e033",
+    "name": "Live Family Fun Day",
+    "genre": "Family",
+    "date": "2026-09-28",
+    "venue": "The Warehouse",
+    "price": 20,
+    "popularity_score": 47,
+    "tickets_sold": 1943
+  },
+  {
+    "id": "e034",
+    "name": "Live Art Opening",
+    "genre": "Art",
+    "date": "2026-12-10",
+    "venue": "Maple Street Theater",
+    "price": 100,
+    "popularity_score": 40,
+    "tickets_sold": 2136
+  },
+  {
+    "id": "e035",
+    "name": "Grand Comedy Showdown",
+    "genre": "Comedy",
+    "date": "2026-10-26",
+    "venue": "Sunset Amphitheater",
+    "price": 150,
+    "popularity_score": 87,
+    "tickets_sold": 4178
+  },
+  {
+    "id": "e036",
+    "name": "Indie Dance Showcase",
+    "genre": "Dance",
+    "date": "2026-10-07",
+    "venue": "The Underground",
+    "price": 60,
+    "popularity_score": 29,
+    "tickets_sold": 1337
+  },
+  {
+    "id": "e037",
+    "name": "Urban Theater Stage Reading",
+    "genre": "Theater",
+    "date": "2026-11-12",
+    "venue": "The Underground",
+    "price": 20,
+    "popularity_score": 80,
+    "tickets_sold": 3894
+  },
+  {
+    "id": "e038",
+    "name": "Live Dance Battle",
+    "genre": "Dance",
+    "date": "2026-09-24",
+    "venue": "Union Square Stage",
+    "price": 25,
+    "popularity_score": 32,
+    "tickets_sold": 1687
+  },
+  {
+    "id": "e039",
+    "name": "Midnight Dance Social",
+    "genre": "Dance",
+    "date": "2026-11-28",
+    "venue": "The Warehouse",
+    "price": 60,
+    "popularity_score": 92,
+    "tickets_sold": 4894
+  },
+  {
+    "id": "e040",
+    "name": "Urban Family Fun Day",
+    "genre": "Family",
+    "date": "2027-01-09",
+    "venue": "Central Park Bandshell",
+    "price": 150,
+    "popularity_score": 41,
+    "tickets_sold": 2191
+  },
+  {
+    "id": "e041",
+    "name": "Local Film Festival",
+    "genre": "Film",
+    "date": "2026-11-09",
+    "venue": "Civic Center",
+    "price": 35,
+    "popularity_score": 37,
+    "tickets_sold": 1008
+  },
+  {
+    "id": "e042",
+    "name": "Grand Dance Recital",
+    "genre": "Dance",
+    "date": "2026-10-25",
+    "venue": "Skyline Rooftop",
+    "price": 25,
+    "popularity_score": 70,
+    "tickets_sold": 3874
+  },
+  {
+    "id": "e043",
+    "name": "Electric Sports Tournament",
+    "genre": "Sports",
+    "date": "2026-11-02",
+    "venue": "Northside Club",
+    "price": 25,
+    "popularity_score": 47,
+    "tickets_sold": 2182
+  },
+  {
+    "id": "e044",
+    "name": "Local Theater Stage Reading",
+    "genre": "Theater",
+    "date": "2026-11-30",
+    "venue": "Skyline Rooftop",
+    "price": 100,
+    "popularity_score": 9,
+    "tickets_sold": 614
+  },
+  {
+    "id": "e045",
+    "name": "Urban Tech Hackathon",
+    "genre": "Tech",
+    "date": "2026-12-27",
+    "venue": "The Loft",
+    "price": 100,
+    "popularity_score": 65,
+    "tickets_sold": 3125
+  },
+  {
+    "id": "e046",
+    "name": "Modern Sports League Night",
+    "genre": "Sports",
+    "date": "2027-01-09",
+    "venue": "Skyline Rooftop",
+    "price": 35,
+    "popularity_score": 32,
+    "tickets_sold": 1842
+  },
+  {
+    "id": "e047",
+    "name": "Grand Film Double Feature",
+    "genre": "Film",
+    "date": "2026-10-10",
+    "venue": "Northside Club",
+    "price": 10,
+    "popularity_score": 20,
+    "tickets_sold": 555
+  },
+  {
+    "id": "e048",
+    "name": "Local Music Tour Stop",
+    "genre": "Music",
+    "date": "2026-12-12",
+    "venue": "Downtown Pavilion",
+    "price": 0,
+    "popularity_score": 72,
+    "tickets_sold": 4749
+  },
+  {
+    "id": "e049",
+    "name": "Underground Family Storytime",
+    "genre": "Family",
+    "date": "2027-01-06",
+    "venue": "Riverside Arena",
+    "price": 60,
+    "popularity_score": 51,
+    "tickets_sold": 2111
+  },
+  {
+    "id": "e050",
+    "name": "Underground Food & Drink Tasting",
+    "genre": "Food & Drink",
+    "date": "2026-11-23",
+    "venue": "Lakeside Gardens",
+    "price": 35,
+    "popularity_score": 35,
+    "tickets_sold": 1940
+  },
+  {
+    "id": "e051",
+    "name": "Neon Music Sessions",
+    "genre": "Music",
+    "date": "2026-11-20",
+    "venue": "Union Square Stage",
+    "price": 10,
+    "popularity_score": 35,
+    "tickets_sold": 2026
+  },
+  {
+    "id": "e052",
+    "name": "Local Sports Championship",
+    "genre": "Sports",
+    "date": "2026-11-07",
+    "venue": "Civic Center",
+    "price": 45,
+    "popularity_score": 24,
+    "tickets_sold": 213
+  },
+  {
+    "id": "e053",
+    "name": "Indie Family Fair",
+    "genre": "Family",
+    "date": "2027-01-05",
+    "venue": "Civic Center",
+    "price": 20,
+    "popularity_score": 64,
+    "tickets_sold": 2656
+  },
+  {
+    "id": "e054",
+    "name": "Local Dance Recital",
+    "genre": "Dance",
+    "date": "2027-01-30",
+    "venue": "Harbor View Hall",
+    "price": 10,
+    "popularity_score": 49,
+    "tickets_sold": 3362
+  },
+  {
+    "id": "e055",
+    "name": "Local Comedy Open Mic",
+    "genre": "Comedy",
+    "date": "2026-09-25",
+    "venue": "Downtown Pavilion",
+    "price": 10,
+    "popularity_score": 56,
+    "tickets_sold": 1993
+  },
+  {
+    "id": "e056",
+    "name": "Neon Theater Play",
+    "genre": "Theater",
+    "date": "2027-01-27",
+    "venue": "Harbor View Hall",
+    "price": 15,
+    "popularity_score": 4,
+    "tickets_sold": 140
+  },
+  {
+    "id": "e057",
+    "name": "Urban Sports Tournament",
+    "genre": "Sports",
+    "date": "2026-10-22",
+    "venue": "The Underground",
+    "price": 75,
+    "popularity_score": 68,
+    "tickets_sold": 3639
+  },
+  {
+    "id": "e058",
+    "name": "Retro Sports Championship",
+    "genre": "Sports",
+    "date": "2026-11-13",
+    "venue": "The Underground",
+    "price": 100,
+    "popularity_score": 23,
+    "tickets_sold": 862
+  },
+  {
+    "id": "e059",
+    "name": "Retro Art Installation",
+    "genre": "Art",
+    "date": "2027-01-29",
+    "venue": "Skyline Rooftop",
+    "price": 25,
+    "popularity_score": 49,
+    "tickets_sold": 2729
+  },
+  {
+    "id": "e060",
+    "name": "Local Dance Battle",
+    "genre": "Dance",
+    "date": "2027-01-29",
+    "venue": "Downtown Pavilion",
+    "price": 35,
+    "popularity_score": 18,
+    "tickets_sold": 320
+  },
+  {
+    "id": "e061",
+    "name": "Golden Family Storytime",
+    "genre": "Family",
+    "date": "2027-01-25",
+    "venue": "Lakeside Gardens",
+    "price": 150,
+    "popularity_score": 74,
+    "tickets_sold": 3133
+  },
+  {
+    "id": "e062",
+    "name": "Classic Tech Workshop",
+    "genre": "Tech",
+    "date": "2026-12-02",
+    "venue": "Skyline Rooftop",
+    "price": 150,
+    "popularity_score": 68,
+    "tickets_sold": 3829
+  },
+  {
+    "id": "e063",
+    "name": "Urban Sports Championship",
+    "genre": "Sports",
+    "date": "2026-10-22",
+    "venue": "The Underground",
+    "price": 0,
+    "popularity_score": 49,
+    "tickets_sold": 1470
+  },
+  {
+    "id": "e064",
+    "name": "Local Film Screening",
+    "genre": "Film",
+    "date": "2026-10-30",
+    "venue": "Old Mill Brewery",
+    "price": 15,
+    "popularity_score": 41,
+    "tickets_sold": 2446
+  },
+  {
+    "id": "e065",
+    "name": "Summer Family Fun Day",
+    "genre": "Family",
+    "date": "2026-12-03",
+    "venue": "Old Mill Brewery",
+    "price": 35,
+    "popularity_score": 16,
+    "tickets_sold": 479
+  },
+  {
+    "id": "e066",
+    "name": "Grand Music Jam",
+    "genre": "Music",
+    "date": "2026-12-13",
+    "venue": "Old Mill Brewery",
+    "price": 20,
+    "popularity_score": 30,
+    "tickets_sold": 1352
+  },
+  {
+    "id": "e067",
+    "name": "Indie Sports Tournament",
+    "genre": "Sports",
+    "date": "2026-09-28",
+    "venue": "Central Park Bandshell",
+    "price": 150,
+    "popularity_score": 43,
+    "tickets_sold": 2306
+  },
+  {
+    "id": "e068",
+    "name": "Grand Music Live",
+    "genre": "Music",
+    "date": "2026-11-13",
+    "venue": "Maple Street Theater",
+    "price": 100,
+    "popularity_score": 82,
+    "tickets_sold": 4618
+  },
+  {
+    "id": "e069",
+    "name": "Electric Theater Revival",
+    "genre": "Theater",
+    "date": "2026-11-11",
+    "venue": "Union Square Stage",
+    "price": 150,
+    "popularity_score": 43,
+    "tickets_sold": 2195
+  },
+  {
+    "id": "e070",
+    "name": "Quiet Food & Drink Market",
+    "genre": "Food & Drink",
+    "date": "2026-11-06",
+    "venue": "Northside Club",
+    "price": 0,
+    "popularity_score": 45,
+    "tickets_sold": 2255
+  },
+  {
+    "id": "e071",
+    "name": "Neon Tech Workshop",
+    "genre": "Tech",
+    "date": "2026-12-31",
+    "venue": "Lakeside Gardens",
+    "price": 45,
+    "popularity_score": 63,
+    "tickets_sold": 2851
+  },
+  {
+    "id": "e072",
+    "name": "Local Art Opening",
+    "genre": "Art",
+    "date": "2026-12-23",
+    "venue": "Old Mill Brewery",
+    "price": 60,
+    "popularity_score": 37,
+    "tickets_sold": 2013
+  },
+  {
+    "id": "e073",
+    "name": "Local Comedy Showdown",
+    "genre": "Comedy",
+    "date": "2026-10-31",
+    "venue": "The Loft",
+    "price": 75,
+    "popularity_score": 29,
+    "tickets_sold": 1272
+  },
+  {
+    "id": "e074",
+    "name": "Wild Theater Revival",
+    "genre": "Theater",
+    "date": "2027-01-07",
+    "venue": "Downtown Pavilion",
+    "price": 60,
+    "popularity_score": 56,
+    "tickets_sold": 2066
+  },
+  {
+    "id": "e075",
+    "name": "Underground Family Fun Day",
+    "genre": "Family",
+    "date": "2027-01-23",
+    "venue": "Union Square Stage",
+    "price": 45,
+    "popularity_score": 53,
+    "tickets_sold": 3763
+  },
+  {
+    "id": "e076",
+    "name": "Local Tech Demo Day",
+    "genre": "Tech",
+    "date": "2027-01-29",
+    "venue": "The Warehouse",
+    "price": 20,
+    "popularity_score": 9,
+    "tickets_sold": 23
+  },
+  {
+    "id": "e077",
+    "name": "Local Film Premiere",
+    "genre": "Film",
+    "date": "2027-01-14",
+    "venue": "Riverside Arena",
+    "price": 100,
+    "popularity_score": 39,
+    "tickets_sold": 860
+  },
+  {
+    "id": "e078",
+    "name": "Electric Tech Workshop",
+    "genre": "Tech",
+    "date": "2027-01-10",
+    "venue": "Downtown Pavilion",
+    "price": 25,
+    "popularity_score": 41,
+    "tickets_sold": 1410
+  },
+  {
+    "id": "e079",
+    "name": "Summer Food & Drink Market",
+    "genre": "Food & Drink",
+    "date": "2027-02-02",
+    "venue": "The Underground",
+    "price": 15,
+    "popularity_score": 5,
+    "tickets_sold": 242
+  },
+  {
+    "id": "e080",
+    "name": "Wild Comedy Standup Hour",
+    "genre": "Comedy",
+    "date": "2027-01-24",
+    "venue": "Civic Center",
+    "price": 75,
+    "popularity_score": 83,
+    "tickets_sold": 4989
+  },
+  {
+    "id": "e081",
+    "name": "Summer Comedy Showdown",
+    "genre": "Comedy",
+    "date": "2026-12-02",
+    "venue": "Sunset Amphitheater",
+    "price": 35,
+    "popularity_score": 56,
+    "tickets_sold": 4022
+  },
+  {
+    "id": "e082",
+    "name": "Urban Sports Rivalry Match",
+    "genre": "Sports",
+    "date": "2026-10-13",
+    "venue": "Old Mill Brewery",
+    "price": 0,
+    "popularity_score": 14,
+    "tickets_sold": 362
+  },
+  {
+    "id": "e083",
+    "name": "Golden Theater One-Act Festival",
+    "genre": "Theater",
+    "date": "2026-12-23",
+    "venue": "Harbor View Hall",
+    "price": 100,
+    "popularity_score": 44,
+    "tickets_sold": 1002
+  },
+  {
+    "id": "e084",
+    "name": "Wild Theater Stage Reading",
+    "genre": "Theater",
+    "date": "2026-09-11",
+    "venue": "Skyline Rooftop",
+    "price": 25,
+    "popularity_score": 53,
+    "tickets_sold": 3218
+  },
+  {
+    "id": "e085",
+    "name": "Underground Music Jam",
+    "genre": "Music",
+    "date": "2026-11-19",
+    "venue": "Lakeside Gardens",
+    "price": 0,
+    "popularity_score": 71,
+    "tickets_sold": 4582
+  },
+  {
+    "id": "e086",
+    "name": "Live Comedy Night",
+    "genre": "Comedy",
+    "date": "2026-09-23",
+    "venue": "The Loft",
+    "price": 150,
+    "popularity_score": 17,
+    "tickets_sold": 918
+  },
+  {
+    "id": "e087",
+    "name": "Retro Sports League Night",
+    "genre": "Sports",
+    "date": "2026-11-12",
+    "venue": "The Loft",
+    "price": 60,
+    "popularity_score": 52,
+    "tickets_sold": 3047
+  },
+  {
+    "id": "e088",
+    "name": "Underground Tech Meetup",
+    "genre": "Tech",
+    "date": "2027-01-31",
+    "venue": "Sunset Amphitheater",
+    "price": 60,
+    "popularity_score": 58,
+    "tickets_sold": 2061
+  },
+  {
+    "id": "e089",
+    "name": "Indie Music Fest",
+    "genre": "Music",
+    "date": "2026-10-20",
+    "venue": "Lakeside Gardens",
+    "price": 10,
+    "popularity_score": 55,
+    "tickets_sold": 1783
+  },
+  {
+    "id": "e090",
+    "name": "Wild Sports Tournament",
+    "genre": "Sports",
+    "date": "2026-12-25",
+    "venue": "The Loft",
+    "price": 10,
+    "popularity_score": 37,
+    "tickets_sold": 2052
+  },
+  {
+    "id": "e091",
+    "name": "Midnight Theater Revival",
+    "genre": "Theater",
+    "date": "2026-09-25",
+    "venue": "Northside Club",
+    "price": 75,
+    "popularity_score": 24,
+    "tickets_sold": 430
+  },
+  {
+    "id": "e092",
+    "name": "Underground Dance Battle",
+    "genre": "Dance",
+    "date": "2026-09-24",
+    "venue": "Old Mill Brewery",
+    "price": 100,
+    "popularity_score": 38,
+    "tickets_sold": 1556
+  },
+  {
+    "id": "e093",
+    "name": "Modern Food & Drink Market",
+    "genre": "Food & Drink",
+    "date": "2026-09-12",
+    "venue": "Central Park Bandshell",
+    "price": 45,
+    "popularity_score": 50,
+    "tickets_sold": 2901
+  },
+  {
+    "id": "e094",
+    "name": "Underground Film Double Feature",
+    "genre": "Film",
+    "date": "2026-11-24",
+    "venue": "The Warehouse",
+    "price": 25,
+    "popularity_score": 11,
+    "tickets_sold": 287
+  },
+  {
+    "id": "e095",
+    "name": "Quiet Music Sessions",
+    "genre": "Music",
+    "date": "2026-11-30",
+    "venue": "Downtown Pavilion",
+    "price": 20,
+    "popularity_score": 54,
+    "tickets_sold": 3306
+  },
+  {
+    "id": "e096",
+    "name": "Golden Food & Drink Market",
+    "genre": "Food & Drink",
+    "date": "2026-12-24",
+    "venue": "Skyline Rooftop",
+    "price": 45,
+    "popularity_score": 55,
+    "tickets_sold": 2730
+  },
+  {
+    "id": "e097",
+    "name": "Classic Comedy Showdown",
+    "genre": "Comedy",
+    "date": "2026-09-27",
+    "venue": "Skyline Rooftop",
+    "price": 75,
+    "popularity_score": 56,
+    "tickets_sold": 3172
+  },
+  {
+    "id": "e098",
+    "name": "Grand Family Fair",
+    "genre": "Family",
+    "date": "2026-12-07",
+    "venue": "Riverside Arena",
+    "price": 25,
+    "popularity_score": 67,
+    "tickets_sold": 4179
+  },
+  {
+    "id": "e099",
+    "name": "Modern Food & Drink Festival",
+    "genre": "Food & Drink",
+    "date": "2026-12-23",
+    "venue": "Skyline Rooftop",
+    "price": 15,
+    "popularity_score": 45,
+    "tickets_sold": 1372
+  },
+  {
+    "id": "e100",
+    "name": "Local Family Fair",
+    "genre": "Family",
+    "date": "2026-10-19",
+    "venue": "Northside Club",
+    "price": 35,
+    "popularity_score": 68,
+    "tickets_sold": 3678
+  },
+  {
+    "id": "e101",
+    "name": "Local Art Exhibit",
+    "genre": "Art",
+    "date": "2027-02-06",
+    "venue": "The Warehouse",
+    "price": 100,
+    "popularity_score": 32,
+    "tickets_sold": 230
+  },
+  {
+    "id": "e102",
+    "name": "Neon Art Installation",
+    "genre": "Art",
+    "date": "2026-12-12",
+    "venue": "Union Square Stage",
+    "price": 45,
+    "popularity_score": 75,
+    "tickets_sold": 3786
+  },
+  {
+    "id": "e103",
+    "name": "Underground Food & Drink Pop-Up",
+    "genre": "Food & Drink",
+    "date": "2026-09-23",
+    "venue": "Lakeside Gardens",
+    "price": 20,
+    "popularity_score": 42,
+    "tickets_sold": 2151
+  },
+  {
+    "id": "e104",
+    "name": "Midnight Theater Play",
+    "genre": "Theater",
+    "date": "2026-09-26",
+    "venue": "Lakeside Gardens",
+    "price": 10,
+    "popularity_score": 69,
+    "tickets_sold": 3318
+  },
+  {
+    "id": "e105",
+    "name": "Golden Food & Drink Pop-Up",
+    "genre": "Food & Drink",
+    "date": "2026-10-19",
+    "venue": "Union Square Stage",
+    "price": 20,
+    "popularity_score": 39,
+    "tickets_sold": 1914
+  },
+  {
+    "id": "e106",
+    "name": "Live Comedy Night",
+    "genre": "Comedy",
+    "date": "2027-01-25",
+    "venue": "Northside Club",
+    "price": 75,
+    "popularity_score": 19,
+    "tickets_sold": 1050
+  },
+  {
+    "id": "e107",
+    "name": "Midnight Food & Drink Pop-Up",
+    "genre": "Food & Drink",
+    "date": "2026-12-27",
+    "venue": "Riverside Arena",
+    "price": 100,
+    "popularity_score": 73,
+    "tickets_sold": 3210
+  },
+  {
+    "id": "e108",
+    "name": "Quiet Comedy Night",
+    "genre": "Comedy",
+    "date": "2026-09-29",
+    "venue": "Downtown Pavilion",
+    "price": 0,
+    "popularity_score": 14,
+    "tickets_sold": 502
+  },
+  {
+    "id": "e109",
+    "name": "Neon Sports League Night",
+    "genre": "Sports",
+    "date": "2027-01-26",
+    "venue": "Maple Street Theater",
+    "price": 15,
+    "popularity_score": 41,
+    "tickets_sold": 1766
+  },
+  {
+    "id": "e110",
+    "name": "Midnight Film Premiere",
+    "genre": "Film",
+    "date": "2026-10-19",
+    "venue": "The Warehouse",
+    "price": 10,
+    "popularity_score": 95,
+    "tickets_sold": 4630
+  },
+  {
+    "id": "e111",
+    "name": "Underground Film Screening",
+    "genre": "Film",
+    "date": "2026-11-09",
+    "venue": "Civic Center",
+    "price": 45,
+    "popularity_score": 56,
+    "tickets_sold": 2187
+  },
+  {
+    "id": "e112",
+    "name": "Indie Comedy Night",
+    "genre": "Comedy",
+    "date": "2027-01-20",
+    "venue": "Northside Club",
+    "price": 20,
+    "popularity_score": 36,
+    "tickets_sold": 1969
+  },
+  {
+    "id": "e113",
+    "name": "Live Art Opening",
+    "genre": "Art",
+    "date": "2027-01-10",
+    "venue": "Riverside Arena",
+    "price": 10,
+    "popularity_score": 71,
+    "tickets_sold": 4040
+  },
+  {
+    "id": "e114",
+    "name": "Live Dance Battle",
+    "genre": "Dance",
+    "date": "2026-10-01",
+    "venue": "The Underground",
+    "price": 35,
+    "popularity_score": 70,
+    "tickets_sold": 4919
+  },
+  {
+    "id": "e115",
+    "name": "Classic Theater Stage Reading",
+    "genre": "Theater",
+    "date": "2027-01-12",
+    "venue": "Central Park Bandshell",
+    "price": 0,
+    "popularity_score": 52,
+    "tickets_sold": 1771
+  },
+  {
+    "id": "e116",
+    "name": "Neon Film Premiere",
+    "genre": "Film",
+    "date": "2026-10-30",
+    "venue": "Northside Club",
+    "price": 25,
+    "popularity_score": 48,
+    "tickets_sold": 1792
+  },
+  {
+    "id": "e117",
+    "name": "Summer Tech Workshop",
+    "genre": "Tech",
+    "date": "2027-01-26",
+    "venue": "The Underground",
+    "price": 10,
+    "popularity_score": 34,
+    "tickets_sold": 1634
+  },
+  {
+    "id": "e118",
+    "name": "Neon Dance Battle",
+    "genre": "Dance",
+    "date": "2026-11-27",
+    "venue": "Maple Street Theater",
+    "price": 75,
+    "popularity_score": 76,
+    "tickets_sold": 3317
+  },
+  {
+    "id": "e119",
+    "name": "Wild Family Fun Day",
+    "genre": "Family",
+    "date": "2026-12-17",
+    "venue": "Union Square Stage",
+    "price": 20,
+    "popularity_score": 43,
+    "tickets_sold": 1992
+  },
+  {
+    "id": "e120",
+    "name": "Modern Family Carnival",
+    "genre": "Family",
+    "date": "2027-01-15",
+    "venue": "Lakeside Gardens",
+    "price": 10,
+    "popularity_score": 9,
+    "tickets_sold": 323
+  },
+  {
+    "id": "e121",
+    "name": "Grand Music Sessions",
+    "genre": "Music",
+    "date": "2027-01-06",
+    "venue": "Central Park Bandshell",
+    "price": 10,
+    "popularity_score": 65,
+    "tickets_sold": 4412
+  },
+  {
+    "id": "e122",
+    "name": "Retro Art Exhibit",
+    "genre": "Art",
+    "date": "2027-01-18",
+    "venue": "The Underground",
+    "price": 60,
+    "popularity_score": 39,
+    "tickets_sold": 2815
+  },
+  {
+    "id": "e123",
+    "name": "Underground Art Installation",
+    "genre": "Art",
+    "date": "2026-12-06",
+    "venue": "Lakeside Gardens",
+    "price": 15,
+    "popularity_score": 19,
+    "tickets_sold": 255
+  },
+  {
+    "id": "e124",
+    "name": "Underground Food & Drink Festival",
+    "genre": "Food & Drink",
+    "date": "2026-12-06",
+    "venue": "The Underground",
+    "price": 25,
+    "popularity_score": 52,
+    "tickets_sold": 3125
+  },
+  {
+    "id": "e125",
+    "name": "Local Film Double Feature",
+    "genre": "Film",
+    "date": "2027-01-11",
+    "venue": "The Loft",
+    "price": 0,
+    "popularity_score": 61,
+    "tickets_sold": 3628
+  },
+  {
+    "id": "e126",
+    "name": "Classic Tech Workshop",
+    "genre": "Tech",
+    "date": "2026-10-30",
+    "venue": "Central Park Bandshell",
+    "price": 20,
+    "popularity_score": 59,
+    "tickets_sold": 3165
+  },
+  {
+    "id": "e127",
+    "name": "Golden Music Showcase",
+    "genre": "Music",
+    "date": "2026-12-28",
+    "venue": "Downtown Pavilion",
+    "price": 20,
+    "popularity_score": 4,
+    "tickets_sold": 280
+  },
+  {
+    "id": "e128",
+    "name": "Indie Tech Meetup",
+    "genre": "Tech",
+    "date": "2026-11-10",
+    "venue": "Civic Center",
+    "price": 15,
+    "popularity_score": 43,
+    "tickets_sold": 2562
+  },
+  {
+    "id": "e129",
+    "name": "Grand Art Exhibit",
+    "genre": "Art",
+    "date": "2027-01-21",
+    "venue": "Harbor View Hall",
+    "price": 45,
+    "popularity_score": 24,
+    "tickets_sold": 1585
+  },
+  {
+    "id": "e130",
+    "name": "Golden Music Jam",
+    "genre": "Music",
+    "date": "2026-10-05",
+    "venue": "Old Mill Brewery",
+    "price": 100,
+    "popularity_score": 68,
+    "tickets_sold": 2960
+  },
+  {
+    "id": "e131",
+    "name": "Underground Dance Battle",
+    "genre": "Dance",
+    "date": "2026-10-12",
+    "venue": "Harbor View Hall",
+    "price": 15,
+    "popularity_score": 24,
+    "tickets_sold": 256
+  },
+  {
+    "id": "e132",
+    "name": "Urban Food & Drink Market",
+    "genre": "Food & Drink",
+    "date": "2027-01-24",
+    "venue": "Lakeside Gardens",
+    "price": 60,
+    "popularity_score": 83,
+    "tickets_sold": 4598
+  },
+  {
+    "id": "e133",
+    "name": "Electric Art Installation",
+    "genre": "Art",
+    "date": "2026-11-15",
+    "venue": "Sunset Amphitheater",
+    "price": 15,
+    "popularity_score": 48,
+    "tickets_sold": 3041
+  },
+  {
+    "id": "e134",
+    "name": "Wild Art Gallery Walk",
+    "genre": "Art",
+    "date": "2027-01-26",
+    "venue": "The Underground",
+    "price": 100,
+    "popularity_score": 70,
+    "tickets_sold": 3980
+  },
+  {
+    "id": "e135",
+    "name": "Indie Tech Meetup",
+    "genre": "Tech",
+    "date": "2026-10-10",
+    "venue": "Maple Street Theater",
+    "price": 0,
+    "popularity_score": 35,
+    "tickets_sold": 2159
+  },
+  {
+    "id": "e136",
+    "name": "Quiet Comedy Open Mic",
+    "genre": "Comedy",
+    "date": "2026-09-27",
+    "venue": "Harbor View Hall",
+    "price": 100,
+    "popularity_score": 39,
+    "tickets_sold": 2789
+  },
+  {
+    "id": "e137",
+    "name": "Grand Dance Recital",
+    "genre": "Dance",
+    "date": "2026-10-04",
+    "venue": "Riverside Arena",
+    "price": 150,
+    "popularity_score": 57,
+    "tickets_sold": 1895
+  },
+  {
+    "id": "e138",
+    "name": "Grand Art Gallery Walk",
+    "genre": "Art",
+    "date": "2026-11-12",
+    "venue": "Skyline Rooftop",
+    "price": 20,
+    "popularity_score": 18,
+    "tickets_sold": 729
+  },
+  {
+    "id": "e139",
+    "name": "Midnight Sports League Night",
+    "genre": "Sports",
+    "date": "2026-12-28",
+    "venue": "Riverside Arena",
+    "price": 35,
+    "popularity_score": 33,
+    "tickets_sold": 2286
+  },
+  {
+    "id": "e140",
+    "name": "Grand Food & Drink Pop-Up",
+    "genre": "Food & Drink",
+    "date": "2026-11-20",
+    "venue": "Harbor View Hall",
+    "price": 25,
+    "popularity_score": 75,
+    "tickets_sold": 4290
+  },
+  {
+    "id": "e141",
+    "name": "Quiet Film Premiere",
+    "genre": "Film",
+    "date": "2027-01-30",
+    "venue": "Riverside Arena",
+    "price": 45,
+    "popularity_score": 14,
+    "tickets_sold": 634
+  },
+  {
+    "id": "e142",
+    "name": "Indie Tech Workshop",
+    "genre": "Tech",
+    "date": "2026-11-30",
+    "venue": "The Warehouse",
+    "price": 75,
+    "popularity_score": 38,
+    "tickets_sold": 1040
+  },
+  {
+    "id": "e143",
+    "name": "Local Film Screening",
+    "genre": "Film",
+    "date": "2027-01-25",
+    "venue": "The Grand Hall",
+    "price": 0,
+    "popularity_score": 23,
+    "tickets_sold": 1056
+  },
+  {
+    "id": "e144",
+    "name": "Classic Food & Drink Brew Crawl",
+    "genre": "Food & Drink",
+    "date": "2027-01-03",
+    "venue": "Northside Club",
+    "price": 60,
+    "popularity_score": 42,
+    "tickets_sold": 1323
+  },
+  {
+    "id": "e145",
+    "name": "Golden Food & Drink Market",
+    "genre": "Food & Drink",
+    "date": "2026-09-15",
+    "venue": "Old Mill Brewery",
+    "price": 20,
+    "popularity_score": 63,
+    "tickets_sold": 4438
+  },
+  {
+    "id": "e146",
+    "name": "Quiet Film Screening",
+    "genre": "Film",
+    "date": "2027-01-31",
+    "venue": "Harbor View Hall",
+    "price": 75,
+    "popularity_score": 67,
+    "tickets_sold": 3429
+  },
+  {
+    "id": "e147",
+    "name": "Grand Comedy Showdown",
+    "genre": "Comedy",
+    "date": "2026-09-13",
+    "venue": "Maple Street Theater",
+    "price": 150,
+    "popularity_score": 34,
+    "tickets_sold": 958
+  },
+  {
+    "id": "e148",
+    "name": "Wild Theater Play",
+    "genre": "Theater",
+    "date": "2027-01-19",
+    "venue": "The Loft",
+    "price": 10,
+    "popularity_score": 36,
+    "tickets_sold": 676
+  },
+  {
+    "id": "e149",
+    "name": "Modern Family Carnival",
+    "genre": "Family",
+    "date": "2026-12-25",
+    "venue": "Northside Club",
+    "price": 45,
+    "popularity_score": 15,
+    "tickets_sold": 377
+  },
+  {
+    "id": "e150",
+    "name": "Urban Tech Meetup",
+    "genre": "Tech",
+    "date": "2026-10-08",
+    "venue": "The Loft",
+    "price": 75,
+    "popularity_score": 56,
+    "tickets_sold": 3502
+  }
+]

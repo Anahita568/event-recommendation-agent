@@ -1,0 +1,266 @@
+[
+  {
+    "id": "u01",
+    "name": "Alex Nguyen",
+    "genres": [
+      "Food & Drink",
+      "Sports",
+      "Film"
+    ],
+    "past_events": [
+      "e063",
+      "e090",
+      "e028",
+      "e145"
+    ],
+    "avg_ticket_price": 50
+  },
+  {
+    "id": "u02",
+    "name": "Jordan Garcia",
+    "genres": [
+      "Food & Drink",
+      "Music",
+      "Art"
+    ],
+    "past_events": [
+      "e051",
+      "e027",
+      "e107"
+    ],
+    "avg_ticket_price": 20
+  },
+  {
+    "id": "u03",
+    "name": "Taylor Smith",
+    "genres": [
+      "Sports",
+      "Music",
+      "Dance"
+    ],
+    "past_events": [
+      "e042",
+      "e026",
+      "e109"
+    ],
+    "avg_ticket_price": 30
+  },
+  {
+    "id": "u04",
+    "name": "Morgan Patel",
+    "genres": [
+      "Dance"
+    ],
+    "past_events": [
+      "e060",
+      "e032"
+    ],
+    "avg_ticket_price": 30
+  },
+  {
+    "id": "u05",
+    "name": "Casey Kim",
+    "genres": [
+      "Theater",
+      "Music"
+    ],
+    "past_events": [
+      "e127",
+      "e011",
+      "e074"
+    ],
+    "avg_ticket_price": 40
+  },
+  {
+    "id": "u06",
+    "name": "Riley Johnson",
+    "genres": [
+      "Comedy"
+    ],
+    "past_events": [
+      "e136",
+      "e007",
+      "e021",
+      "e147",
+      "e073",
+      "e035"
+    ],
+    "avg_ticket_price": 50
+  },
+  {
+    "id": "u07",
+    "name": "Sam Rossi",
+    "genres": [
+      "Theater"
+    ],
+    "past_events": [
+      "e002",
+      "e010",
+      "e091"
+    ],
+    "avg_ticket_price": 65
+  },
+  {
+    "id": "u08",
+    "name": "Jamie M\u00fcller",
+    "genres": [
+      "Comedy",
+      "Family",
+      "Film"
+    ],
+    "past_events": [
+      "e080",
+      "e110",
+      "e120",
+      "e019"
+    ],
+    "avg_ticket_price": 80
+  },
+  {
+    "id": "u09",
+    "name": "Avery Chen",
+    "genres": [
+      "Sports",
+      "Music",
+      "Tech"
+    ],
+    "past_events": [
+      "e135",
+      "e009",
+      "e013",
+      "e088"
+    ],
+    "avg_ticket_price": 65
+  },
+  {
+    "id": "u10",
+    "name": "Quinn Okafor",
+    "genres": [
+      "Comedy",
+      "Film"
+    ],
+    "past_events": [
+      "e147",
+      "e081",
+      "e014",
+      "e143",
+      "e064",
+      "e108"
+    ],
+    "avg_ticket_price": 25
+  },
+  {
+    "id": "u11",
+    "name": "Drew Silva",
+    "genres": [
+      "Theater"
+    ],
+    "past_events": [
+      "e083",
+      "e084",
+      "e148"
+    ],
+    "avg_ticket_price": 50
+  },
+  {
+    "id": "u12",
+    "name": "Reese Andersson",
+    "genres": [
+      "Family",
+      "Dance"
+    ],
+    "past_events": [
+      "e053",
+      "e060",
+      "e075"
+    ],
+    "avg_ticket_price": 65
+  },
+  {
+    "id": "u13",
+    "name": "Skyler Khan",
+    "genres": [
+      "Comedy"
+    ],
+    "past_events": [
+      "e106",
+      "e112",
+      "e086",
+      "e108",
+      "e035",
+      "e080"
+    ],
+    "avg_ticket_price": 80
+  },
+  {
+    "id": "u14",
+    "name": "Rowan Lopez",
+    "genres": [
+      "Art"
+    ],
+    "past_events": [
+      "e134",
+      "e102",
+      "e101"
+    ],
+    "avg_ticket_price": 65
+  },
+  {
+    "id": "u15",
+    "name": "Elliot Brown",
+    "genres": [
+      "Comedy",
+      "Food & Drink",
+      "Art"
+    ],
+    "past_events": [
+      "e144",
+      "e080",
+      "e101"
+    ],
+    "avg_ticket_price": 25
+  },
+  {
+    "id": "u16",
+    "name": "Kendall Dubois",
+    "genres": [
+      "Film",
+      "Comedy",
+      "Dance"
+    ],
+    "past_events": [
+      "e015"
+    ],
+    "avg_ticket_price": 65
+  },
+  {
+    "id": "u17",
+    "name": "Parker Novak",
+    "genres": [
+      "Food & Drink"
+    ],
+    "past_events": [
+      "e105",
+      "e020"
+    ],
+    "avg_ticket_price": 50
+  },
+  {
+    "id": "u18",
+    "name": "Blair Haddad",
+    "genres": [
+      "Comedy",
+      "Art",
+      "Food & Drink"
+    ],
+    "past_events": [
+      "e106",
+      "e020",
+      "e086",
+      "e134",
+      "e093",
+      "e099"
+    ],
+    "avg_ticket_price": 20
+  }
+]

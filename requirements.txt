@@ -1,0 +1,6 @@
+langgraph==1.2.11
+anthropic[bedrock]==1.5.0
+pydantic==2.13.5
+pytest==9.1.1
+jupyter==1.1.1
+python-dotenv==1.2.3
