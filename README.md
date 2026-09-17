@@ -67,18 +67,61 @@ export BEDROCK_MODEL_ID=anthropic.claude-opus-5   # any Claude model enabled in 
 python3 demo.py --transcript u01 "comedy tonight" # prints the full exchange with the model
 ```
 
+`make_client()` (`agent/tool_calling.py`) picks the right SDK client from
+`BEDROCK_MODEL_ID`'s format: short ids (`anthropic.claude-opus-5`) go through
+the newer Messages-API `bedrock-mantle` endpoint; dated, region-prefixed ids
+(`us.anthropic.claude-sonnet-4-5-20250929-v1:0`) go through the legacy
+`InvokeModel` endpoint. Both need a one-time per-model agreement accepted in
+your AWS account before the first call succeeds:
+
+```bash
+TOKEN=$(aws bedrock list-foundation-model-agreement-offers \
+  --model-id <model-id-without-region-prefix> --query "offers[0].offerToken" --output text)
+aws bedrock create-foundation-model-agreement \
+  --model-id <model-id-without-region-prefix> --offer-token "$TOKEN"
+```
+
 Set `EVENT_AGENT_LLM=off` to force the deterministic path even with
 credentials. Never commit credentials; tests and the deterministic path
 need none.
 
-**A note on the LLM path.** I originally ran this path against live Bedrock
-from a practice sandbox I no longer have access to, and a new AWS account
-needs Anthropic's Bedrock model-access approval before it can call Claude.
-Until that clears, the tool-calling loop is exercised in
-`tests/test_tool_calling.py` against a scripted fake client shaped like a
-real Bedrock response: argument validation, parallel tool calls, tool errors,
-unknown tools, and the iteration cap. A real transcript will follow once
-access is approved.
+**A note on the LLM path.** This now runs against live Bedrock. `anthropic.claude-opus-5`
+turned out to be gated behind AWS's `bedrock-mantle` early-access program (not
+self-service — the account needs allowlisting by `bedrock-ant-eap@amazon.com`
+even after the model agreement and IAM permissions are correctly set up), so
+the verified transcripts below use the legacy endpoint with Claude Sonnet 4.5
+instead. Swap `BEDROCK_MODEL_ID` back to `anthropic.claude-opus-5` once EAP
+access clears. A real transcript, keyword search with zero hits triggering the
+date-relaxation fallback:
+
+```
+$ python3 demo.py --transcript u01 "comedy tonight"
+
+Execution path: llm_tools (Claude on Bedrock chose the tool calls)
+Model summary: I searched for Comedy events tonight (2026-09-17) but found no matches.
+Fallbacks used: ['alternative_source_fallback']
+  alternative_source_fallback: drop_dates
+```
+
+And the golden path, a genre + date request resolved in a single search with
+real hits, no fallback needed:
+
+```
+$ python3 demo.py --transcript u02 "any sports events next month"
+
+Execution path: llm_tools (Claude on Bedrock chose the tool calls)
+Model summary: I searched for Sports events in October 2026.
+
+Recommendations:
+  - Grand Sports League Night (Sports) at Maple Street Theater on 2026-10-08 — $25  [popularity 68]
+  - Urban Sports Tournament (Sports) at The Underground on 2026-10-22 — $75  [popularity 68]
+  ...
+```
+
+`tests/test_tool_calling.py` still covers the loop's edge cases (bad
+arguments, tool exceptions, parallel calls, unknown tools, iteration cap)
+against a scripted fake client, since those failure modes are impractical to
+trigger against a live model on demand.
 
 ## How it works
 

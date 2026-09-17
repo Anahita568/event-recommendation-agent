@@ -186,7 +186,22 @@ def bedrock_available() -> tuple[bool, str | None]:
 
 def make_client():
     """Create the Anthropic SDK client for Bedrock. Imported lazily so the
-    deterministic path has no SDK dependency at runtime."""
+    deterministic path has no SDK dependency at runtime.
+
+    BEDROCK_MODEL_ID's format picks the client: short-form ids like
+    "anthropic.claude-opus-5" go through the Messages-API bedrock-mantle
+    endpoint; dated, ARN-versioned ids (optionally region-prefixed, e.g.
+    "us.anthropic.claude-sonnet-4-5-20250929-v1:0") go through the legacy
+    InvokeModel endpoint, which isn't gated by the bedrock-mantle EAP.
+    """
+    region_prefixes = ("global.", "us.", "eu.", "jp.", "apac.")
+    is_legacy = BEDROCK_MODEL_ID.startswith(region_prefixes) or BEDROCK_MODEL_ID.endswith(("-v1:0", "-v1"))
+
+    if is_legacy:
+        from anthropic import AnthropicBedrock
+
+        return AnthropicBedrock(aws_region=BEDROCK_REGION)
+
     from anthropic import AnthropicBedrockMantle
 
     return AnthropicBedrockMantle(aws_region=BEDROCK_REGION)
