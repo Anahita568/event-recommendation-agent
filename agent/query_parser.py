@@ -84,6 +84,11 @@ def parse_query_rule_based(query: str, today: date | None = None) -> dict:
     elif "tomorrow" in text:
         tomorrow = today + timedelta(days=1)
         intent["date_from"] = intent["date_to"] = tomorrow.isoformat()
+    elif "next weekend" in text:
+        # Checked before "next week", which it contains: the Saturday-Sunday
+        # of next week, not the whole week.
+        monday, sunday = _week_bounds(today + timedelta(days=7))
+        intent["date_from"], intent["date_to"] = (monday + timedelta(days=5)).isoformat(), sunday.isoformat()
     elif "next week" in text:
         monday, sunday = _week_bounds(today + timedelta(days=7))
         intent["date_from"], intent["date_to"] = monday.isoformat(), sunday.isoformat()

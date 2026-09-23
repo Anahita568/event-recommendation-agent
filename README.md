@@ -33,8 +33,8 @@ Built with Claude Code as an AI coding assistant.
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-pytest                                             # 58 tests, no AWS needed
-python -m evals.run_evals --path deterministic     # 36 eval cases, offline (see Evals)
+pytest                                             # 59 tests, no AWS needed
+python -m evals.run_evals --path deterministic     # 37 eval cases, offline (see Evals)
 python3 demo.py u01 "find me a concert next week"  # one query (-v for per-node logs)
 python3 demo.py                                    # interactive mode
 ```
@@ -218,12 +218,12 @@ python -m evals.run_evals --category adversarial --case s01   # filter
 The default `auto` mode calls Bedrock whenever AWS credentials are found,
 which costs money. Use `--path deterministic` to stay offline.
 
-**Dataset.** `evals/cases.jsonl` has 36 labeled cases over the synthetic
+**Dataset.** `evals/cases.jsonl` has 37 labeled cases over the synthetic
 users and events:
 
 | Category | n | What it probes |
 |---|---|---|
-| straightforward | 8 | plain genre + date requests |
+| straightforward | 9 | plain genre + date requests |
 | phrasing | 9 | synonyms ("improv", "flick", "kiddos"), typos, weekday names, "in October", stated budgets ("under $15", "free") |
 | ambiguous | 5 | "a show", "game night", "something fun"; any reasonable reading passes |
 | fallback | 6 | unknown user (Fallback A), relaxation (Fallback B), and injected tool failures for the trending stage and Fallback C |
@@ -254,11 +254,11 @@ each LLM case repeats and the report adds per-case pass rates and flags
 flaky cases. Each run writes `evals/results/<timestamp>_<path>[_<model>].json`
 (gitignored) with the config, summaries and every run's checks and output.
 
-**Deterministic baseline**, 25 of 36 cases passing:
+**Deterministic baseline**, 26 of 37 cases passing:
 
 | Category | Pass |
 |---|---|
-| straightforward | 7/8 |
+| straightforward | 8/9 |
 | phrasing | 0/9 |
 | ambiguous | 4/5 |
 | fallback | 6/6 |

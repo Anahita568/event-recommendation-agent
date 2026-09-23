@@ -47,3 +47,11 @@ def test_rule_based_weekend_on_a_weekday_is_the_coming_saturday_and_sunday():
 def test_rule_based_weekend_on_a_sunday_never_reaches_into_the_past():
     intent = query_parser.parse_query_rule_based("this weekend", today=date(2026, 9, 13))  # Sunday
     assert (intent["date_from"], intent["date_to"]) == ("2026-09-13", "2026-09-13")
+
+
+def test_rule_based_next_weekend_is_saturday_and_sunday_of_next_week():
+    intent = query_parser.parse_query_rule_based("comedy next weekend", today=date(2026, 9, 17))  # Thursday
+    assert (intent["date_from"], intent["date_to"]) == ("2026-09-26", "2026-09-27")
+    # "next week" still means the whole of next week.
+    intent = query_parser.parse_query_rule_based("comedy next week", today=date(2026, 9, 17))
+    assert (intent["date_from"], intent["date_to"]) == ("2026-09-21", "2026-09-27")
