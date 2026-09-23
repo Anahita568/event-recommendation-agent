@@ -6,3 +6,7 @@ __pycache__/
 .ipynb_checkpoints/
 venv/
 .venv/
+
+# Eval run outputs (the directory itself is kept via .gitkeep)
+evals/results/*
+!evals/results/.gitkeep
