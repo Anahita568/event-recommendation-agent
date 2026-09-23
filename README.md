@@ -15,6 +15,7 @@ budget, and attendance history.
 - **Fallbacks are LangGraph conditional edges**, one node per fallback, and a test asserts the exact edge set.
 - **An empty search relaxes one constraint at a time** (dates, then budget, then genre) instead of throwing the request away.
 - **Ranking is personalised**: genres the user attended are boosted, genres they skipped are penalised, and every recommendation carries a one-line reason.
+- **Evals measure it**: 37 labeled cases scored on both paths with deterministic checks. They found three bugs, each fixed and re-measured. See [Reliability](#reliability).
 - Every tool call and model round-trip is timed and logged. All data is synthetic (`data/*.json`).
 
 ## [Try it in your browser](https://claude.ai/code/artifact/c59cd02b-9945-405e-9bd7-c8e2a4c8158e)
@@ -186,6 +187,56 @@ Claude only plans and searches. Ranking and fallbacks are plain code shared by b
 genre: +8 per attended event, +3 per browsed, −5 per skipped. Already-attended
 events are dropped. Each result carries its score and a reason, such as
 `popularity 64, attended 3 Sports`.
+
+## Reliability
+
+Three layers: guardrails stop bad actions, fallbacks keep a failed step from
+failing the request, and [evals](#evals) measure whether the answer was
+right.
+
+**What happens when something fails**
+
+| Failure | What the agent does | Shown by |
+|---|---|---|
+| Bedrock call errors (throttling, 5xx, network) | the SDK's default retries (2), then the request reruns on the deterministic path | `test_api_failure_is_metered_and_raised`, `test_llm_failure_routes_to_deterministic_path` |
+| Model sends invalid tool arguments | rejected by the schema before the tool runs; the error goes back to the model to correct | `test_invalid_arguments_are_returned_as_error_and_model_can_retry` |
+| Model calls a tool that doesn't exist | returned as an error result, never executed | `test_unknown_tool_name_is_an_error_result`, eval `x07` |
+| A tool raises | reported to the model as an error result, not a crash | `test_tool_exception_is_reported_not_raised` |
+| Model loops, or finishes without searching | capped at 6 iterations, then the deterministic path | `test_iteration_cap_is_enforced`, `test_finishing_without_a_search_raises` |
+| User lookup fails | Fallback A: default profile with all genres | `test_agent_missing_user_routes_to_graceful_degradation`, evals `f01`, `f02` |
+| Search finds nothing, or fails | Fallback B: drop dates, then budget, then trending; never events in the past | `test_fallback_b_*`, evals `s01`, `f03`–`f05` |
+| Ranking fails | Fallback C: top 10 unranked results | `test_fallback_c_partial_results`, eval `f06` |
+| Request asks for another user's data, or tries to override instructions | `fetch_user_preferences` takes no arguments, so the user can't be changed; evals check the model's text for leaks | evals `x01`–`x08` |
+
+**How correctness is measured.** 37 labeled cases, scored with
+deterministic checks (no LLM judge) on intent, constraints, fallback
+choice, tool use and leaks, on both paths. `--runs N` repeats LLM cases to
+measure run-to-run variation. Details in [Evals](#evals).
+
+**What the evals found and fixed.** Each fix was measured before and
+after, and no agent behaviour was changed just to make a case pass.
+
+- "Next weekend" was read as the whole of next week, so a Friday show counted as weekend (case `s09`).
+- Relaxing the dates could recommend events that had already happened (`s04`). `not_past` now holds on every case.
+- A test depended on the real calendar and had started failing once the dates moved on. Every test now pins "today".
+
+The deterministic baseline went from 25 of 36 to 27 of 37 cases passing
+(one case was added for the "next weekend" bug).
+
+**Not done yet**
+
+- **No live LLM eval run.** The two transcripts above are live, but the LLM
+  scoring has only been checked offline against a scripted fake model, so
+  there's no LLM pass rate yet.
+- **Retries use the SDK defaults:** 2 retries and a 10-minute timeout per
+  call, far longer than a planning call needs. They aren't tuned or tested
+  here.
+- **Two known LLM-path gaps.** When a request names a genre, the system
+  prompt tells Claude to skip `fetch_user_preferences`, so the stored budget
+  and history aren't applied. And in that case, if the search comes back
+  empty, Fallback B drops the `price_max` the model passed.
+- **The keyword parser misses most rephrasings** (phrasing cases: 0 of 9),
+  and it ignores stated budgets ("under $15").
 
 ## Tests
 
