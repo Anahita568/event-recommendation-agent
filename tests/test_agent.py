@@ -1,6 +1,4 @@
-from datetime import date
-
-from agent import query_parser, tool_calling, tools
+from agent import tool_calling, tools
 from agent.recommendation_agent import build_graph, invoke
 from agent.tool_calling import ToolLoopError, ToolLoopOutcome
 
@@ -8,17 +6,6 @@ FIXED_EVENTS = [
     {"id": "e1", "genre": "Music", "popularity_score": 10, "price": 20},
     {"id": "e2", "genre": "Music", "popularity_score": 90, "price": 30},
 ]
-
-
-def _pin_today(monkeypatch, today: date) -> None:
-    """Make the query parser's date.today() return a fixed date."""
-
-    class PinnedDate(date):
-        @classmethod
-        def today(cls):
-            return cls(today.year, today.month, today.day)
-
-    monkeypatch.setattr(query_parser, "date", PinnedDate)
 
 
 def _enable_llm(monkeypatch, loop):
@@ -133,11 +120,10 @@ def test_agent_ranking_failure_routes_to_partial_results(monkeypatch):
     assert 0 < len(result["recommendations"]) <= 10
 
 
-def test_agent_relaxes_dates_before_genre_when_week_has_no_match(monkeypatch):
-    # From 2026-09-17, "next week" is 09-21..09-27, which has no Music
-    # events, so the exact search is empty. The fallback must keep the
-    # requested genre.
-    _pin_today(monkeypatch, date(2026, 9, 17))
+def test_agent_relaxes_dates_before_genre_when_week_has_no_match():
+    # With today pinned to 2026-09-17 (conftest), "next week" is
+    # 09-21..09-27, which has no Music events, so the exact search is
+    # empty. The fallback must keep the requested genre.
     result = invoke("u01", "find me a concert next week")
 
     assert result["fallback_strategies_used"] == ["alternative_source_fallback"]

@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from agent import tools
+from agent import fallbacks, tools
 from agent.fallbacks import (
     alternative_source_fallback,
     graceful_degradation_fallback,
@@ -37,6 +37,17 @@ def test_fallback_b_trending_when_nothing_to_relax():
     assert result.fallback_count == 1
     assert "alternative_source_fallback" in result.fallback_strategies_used
     assert result.fallback_details == {"alternative_source_fallback": "trending"}
+
+
+def test_fallback_b_trending_skips_past_events(monkeypatch):
+    # Widen trending to the whole catalog so the four past events (before
+    # 2026-09-17, pinned in conftest) would be included if not filtered.
+    monkeypatch.setattr(fallbacks, "TRENDING_LIMIT", 1000)
+    state = AgentState(user_id="u01", query="anything fun")
+    result = alternative_source_fallback(state)
+
+    assert result.search_results
+    assert all(e["date"] >= "2026-09-17" for e in result.search_results)
 
 
 def test_fallback_b_drops_dates_first_and_keeps_genre_and_budget():

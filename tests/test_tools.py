@@ -65,6 +65,15 @@ def test_search_events_date_filter(events):
     assert all(date_from <= e["date"] <= date_to for e in results)
 
 
+def test_search_events_never_returns_past_events():
+    # Today is pinned to 2026-09-17 (conftest); e084 is Theater on 2026-09-11.
+    assert "e084" not in {e["id"] for e in search_events(["Theater"])}
+    # An explicit date range that reaches into the past is cut at today.
+    results = search_events(["Theater"], date_from="2026-09-01", date_to="2026-09-30")
+    assert results and all(e["date"] >= "2026-09-17" for e in results)
+    assert search_events(["Theater"], date_from="2026-09-01", date_to="2026-09-16") == []
+
+
 def test_search_events_empty():
     results = search_events(["Not A Real Genre"])
     assert results == []

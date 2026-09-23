@@ -47,7 +47,7 @@ def alternative_source_fallback(state: AgentState) -> AgentState:
 
     1. ``drop_dates``: keep the genres and budget, drop the date range.
     2. ``drop_dates_and_budget``: keep the genres only.
-    3. ``trending``: the top 20 events by popularity regardless of genre.
+    3. ``trending``: the top 20 upcoming events by popularity regardless of genre.
 
     A user who asked for "a concert next week" therefore still gets
     concerts, just on other dates, and only lands on the trending list
@@ -83,7 +83,7 @@ def alternative_source_fallback(state: AgentState) -> AgentState:
             break
 
     if not results:
-        events = _load_json("events.json")
+        events = tools.upcoming(_load_json("events.json"))
         results = sorted(events, key=lambda e: e["popularity_score"], reverse=True)[:TRENDING_LIMIT]
 
     logger.warning("alternative_source_fallback: stage %s produced %d events", stage_used, len(results))

@@ -7,6 +7,7 @@ called directly by agent nodes (see agent/recommendation_agent.py).
 import json
 import logging
 from collections import Counter
+from datetime import date
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,12 @@ def _load_json(filename: str):
     path = DATA_DIR / filename
     with open(path) as f:
         return json.load(f)
+
+
+def upcoming(events: list[dict]) -> list[dict]:
+    """Drop events dated before today; they can no longer be attended."""
+    today = date.today().isoformat()
+    return [e for e in events if e["date"] >= today]
 
 
 def fetch_user_preferences(user_id: str) -> dict:
@@ -64,7 +71,11 @@ def search_events(
     date_to: str | None = None,
     limit: int = 20,
 ) -> list[dict]:
-    """Search for events matching the given genres, price cap, and date range.
+    """Search for upcoming events matching the given genres, price cap, and date range.
+
+    Events dated before today are never returned, whatever date_from says,
+    so a search with no date range (or one relaxed by a fallback) can't
+    recommend something that already happened.
 
     Args:
         genres: List of genres to match against event genre.
@@ -78,7 +89,7 @@ def search_events(
     Returns:
         A list of matching event dicts, or an empty list if none match.
     """
-    events = _load_json("events.json")
+    events = upcoming(_load_json("events.json"))
 
     matches = [e for e in events if e["genre"] in genres]
     if price_max is not None:

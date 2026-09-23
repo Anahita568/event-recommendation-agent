@@ -39,7 +39,7 @@ def pinned_clock(today: date):
             return cls(today.year, today.month, today.day)
 
     with ExitStack() as stack:
-        for module in (query_parser, tool_calling):
+        for module in (query_parser, tool_calling, tools):
             stack.enter_context(mock.patch.object(module, "date", PinnedDate))
         yield
 

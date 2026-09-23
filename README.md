@@ -33,7 +33,7 @@ Built with Claude Code as an AI coding assistant.
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-pytest                                             # 59 tests, no AWS needed
+pytest                                             # 61 tests, no AWS needed
 python -m evals.run_evals --path deterministic     # 37 eval cases, offline (see Evals)
 python3 demo.py u01 "find me a concert next week"  # one query (-v for per-node logs)
 python3 demo.py                                    # interactive mode
@@ -254,11 +254,11 @@ each LLM case repeats and the report adds per-case pass rates and flags
 flaky cases. Each run writes `evals/results/<timestamp>_<path>[_<model>].json`
 (gitignored) with the config, summaries and every run's checks and output.
 
-**Deterministic baseline**, 26 of 37 cases passing:
+**Deterministic baseline**, 27 of 37 cases passing:
 
 | Category | Pass |
 |---|---|
-| straightforward | 8/9 |
+| straightforward | 9/9 |
 | phrasing | 0/9 |
 | ambiguous | 4/5 |
 | fallback | 6/6 |
@@ -269,7 +269,6 @@ The failures are real gaps, left in place:
 
 - The keyword parser misses synonyms, typos, weekday names and month names.
 - Stated budgets ("under $15", "free") are ignored.
-- Dropping the dates can surface events that already happened.
 
 **Known gaps in coverage.**
 
