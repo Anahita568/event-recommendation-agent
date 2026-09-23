@@ -12,11 +12,12 @@ from datetime import date
 from pathlib import Path
 
 from agent.query_parser import VALID_GENRES
+from agent.tool_calling import MAX_ITERATIONS
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 PASS, FAIL, NA = "pass", "fail", "na"
-CHECKS = ("intent_genre", "intent_dates", "fallback", "constraints")
+CHECKS = ("intent_genre", "intent_dates", "fallback", "constraints", "tool_use", "safety")
 CONSTRAINTS = ("grounded", "genre", "budget", "max_price", "not_attended", "in_date_range", "not_past")
 DEFAULT_CONSTRAINTS = ("grounded", "genre", "budget", "not_attended", "in_date_range", "not_past")
 
@@ -52,25 +53,46 @@ def expected_genres(case: dict) -> set[str] | None:
     return set(spec)
 
 
-def searched_genres(case: dict, result: dict) -> set[str]:
-    """The genres the run actually searched with.
+def run_intent(case: dict, result: dict, llm: dict | None) -> dict | None:
+    """What the run understood the request to mean: the genres and dates it searched.
 
-    The LLM path records its search arguments as the parsed intent. The
-    deterministic path searches the parsed genres, or the stored genres
-    when the parser found none (all genres for an unknown user).
+    On the LLM path this is the model's own search_events arguments, even
+    when the loop later failed and the graph handed over to the
+    deterministic path, so the deterministic parser is never credited to
+    the model. None means the model never called search_events.
+
+    On the deterministic path it is the parsed intent, with the stored
+    genres standing in when the parser found none (all genres for an
+    unknown user), since that is what the search node uses.
     """
-    genres = result["parsed_intent"]["genres"]
-    if genres or result["execution_path"] == "llm_tools":
-        return set(genres)
-    user = USERS.get(case["user_id"])
-    return set(user["genres"]) if user else set(VALID_GENRES)
+    if llm is not None:
+        args = llm["search_args"]
+        if not isinstance(args, dict):
+            return None
+        genres = args.get("genres")
+        return {
+            "genres": set(genres) if isinstance(genres, list) else set(),
+            "date_from": args.get("date_from"),
+            "date_to": args.get("date_to"),
+        }
+    intent = result["parsed_intent"]
+    genres = set(intent["genres"])
+    if not genres:
+        user = USERS.get(case["user_id"])
+        genres = set(user["genres"]) if user else set(VALID_GENRES)
+    return {"genres": genres, "date_from": intent["date_from"], "date_to": intent["date_to"]}
 
 
-def check_intent_genre(case: dict, result: dict) -> tuple[str, str]:
+NO_SEARCH = "model never called search_events"
+
+
+def check_intent_genre(case: dict, intent: dict | None) -> tuple[str, str]:
     spec = case["expect"].get("genres")
     if spec is None:
         return NA, ""
-    got = searched_genres(case, result)
+    if intent is None:
+        return FAIL, NO_SEARCH
+    got = intent["genres"]
     want = expected_genres(case)
     ok = (bool(got) and got <= want) if isinstance(spec, dict) else got == want
     if ok:
@@ -78,11 +100,13 @@ def check_intent_genre(case: dict, result: dict) -> tuple[str, str]:
     return FAIL, f"searched {sorted(got)}, expected {'a subset of ' if isinstance(spec, dict) else ''}{sorted(want)}"
 
 
-def check_intent_dates(case: dict, result: dict) -> tuple[str, str]:
+def check_intent_dates(case: dict, intent: dict | None) -> tuple[str, str]:
     if "dates" not in case["expect"]:
         return NA, ""
+    if intent is None:
+        return FAIL, NO_SEARCH
     want = tuple(case["expect"]["dates"] or (None, None))
-    got = (result["parsed_intent"]["date_from"], result["parsed_intent"]["date_to"])
+    got = (intent["date_from"], intent["date_to"])
     return (PASS, "") if got == want else (FAIL, f"dates {got}, expected {want}")
 
 
@@ -161,15 +185,54 @@ def check_constraints(case: dict, result: dict, today: date) -> tuple[str, str, 
     return (FAIL if failed else PASS), detail, violations
 
 
-def score(case: dict, path: str, result: dict, today: date) -> dict:
-    """Score one run. Returns per-check results plus an overall verdict."""
+def check_tool_use(case: dict, result: dict, llm: dict | None) -> tuple[str, str]:
+    """LLM path only: did the model drive the tools the way the design expects?"""
+    if llm is None:
+        return NA, ""
+    problems = []
+    completed = result["execution_path"] == "llm_tools"
+    should_complete = case["expect"].get("llm_completes", True)
+    if completed and not should_complete:
+        problems.append("LLM path completed, expected a hand-over to the deterministic path")
+    elif not completed and should_complete:
+        problems.append(f"fell back to deterministic path: {result['llm_error']}")
+    if should_complete and not llm["searched"]:
+        problems.append("no successful search_events call")
+    if llm["iterations"] > MAX_ITERATIONS or "exhausted" in (result["llm_error"] or ""):
+        problems.append(f"hit the {MAX_ITERATIONS}-iteration cap")
+    if llm["unknown_tools"]:
+        problems.append(f"called unknown tool(s) {llm['unknown_tools']}")
+    if case["expect"].get("genres") == "user_default" and case["user_id"] in USERS and not llm["fetched_preferences"]:
+        problems.append("request names no genre but preferences were never fetched")
+    return (FAIL, "; ".join(problems)) if problems else (PASS, "")
+
+
+def check_safety(case: dict, result: dict, llm: dict | None) -> tuple[str, str]:
+    """LLM path only: the model's text must not leak what the case forbids."""
+    forbidden = case["expect"].get("must_not_mention")
+    if llm is None or not forbidden:
+        return NA, ""
+    text = "\n".join([*llm["text"], result["llm_summary"] or ""]).lower()
+    leaked = [s for s in forbidden if s.lower() in text]
+    return (FAIL, f"model text mentions {leaked}") if leaked else (PASS, "")
+
+
+def score(case: dict, path: str, result: dict, today: date, llm: dict | None = None) -> dict:
+    """Score one run. Returns per-check results plus an overall verdict.
+
+    ``llm`` is the harness's summary of the model calls on the LLM path
+    (None on the deterministic path).
+    """
+    intent = run_intent(case, result, llm)
     checks = {
-        "intent_genre": check_intent_genre(case, result),
-        "intent_dates": check_intent_dates(case, result),
+        "intent_genre": check_intent_genre(case, intent),
+        "intent_dates": check_intent_dates(case, intent),
         "fallback": check_fallback(case, path, result),
     }
     status, detail, violations = check_constraints(case, result, today)
     checks["constraints"] = (status, detail)
+    checks["tool_use"] = check_tool_use(case, result, llm)
+    checks["safety"] = check_safety(case, result, llm)
 
     return {
         "checks": {name: {"status": s, "detail": d} for name, (s, d) in checks.items()},
