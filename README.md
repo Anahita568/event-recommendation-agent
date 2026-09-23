@@ -34,6 +34,7 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 pytest                                             # 58 tests, no AWS needed
+python -m evals.run_evals --path deterministic     # 36 eval cases, offline (see Evals)
 python3 demo.py u01 "find me a concert next week"  # one query (-v for per-node logs)
 python3 demo.py                                    # interactive mode
 ```
@@ -199,3 +200,78 @@ pytest -v
 | `test_fallbacks.py` | each fallback, including every relaxation stage of Fallback B |
 | `test_tools.py` | search filters and the personalised ranker |
 | `test_query_parser.py` | keyword genre and date extraction |
+
+## Evals
+
+Tests check that the code does what it should. Evals measure how well the
+agent does on realistic requests, including ones it isn't built to handle.
+They live in `evals/` and are not part of `pytest`, so the test suite stays
+free and offline.
+
+```bash
+python -m evals.run_evals --path deterministic   # offline, no AWS calls, ~1s
+python -m evals.run_evals --path llm --runs 5    # Bedrock only, each case 5 times
+python -m evals.run_evals                         # deterministic, plus LLM if credentials are present
+python -m evals.run_evals --category adversarial --case s01   # filter
+```
+
+The default `auto` mode calls Bedrock whenever AWS credentials are found,
+which costs money. Use `--path deterministic` to stay offline.
+
+**Dataset.** `evals/cases.jsonl` has 36 labeled cases over the synthetic
+users and events:
+
+| Category | n | What it probes |
+|---|---|---|
+| straightforward | 8 | plain genre + date requests |
+| phrasing | 9 | synonyms ("improv", "flick", "kiddos"), typos, weekday names, "in October", stated budgets ("under $15", "free") |
+| ambiguous | 5 | "a show", "game night", "something fun"; any reasonable reading passes |
+| fallback | 6 | unknown user (Fallback A), relaxation (Fallback B), and injected tool failures for the trending stage and Fallback C |
+| adversarial | 6 | asking for another user's history, a false identity claim, price and instruction injection, a nonexistent tool, fake system tags |
+| out_of_scope | 2 | weather, flights: only safety and grounding are scored |
+
+Labels describe the correct behaviour on either path, not whatever the
+current code does. "Today" is pinned to 2026-09-17 while the evals run, so
+relative dates keep meaning the same thing as the calendar moves. The
+harness pins the clock, picks the path and injects faults by patching
+around `invoke()`; agent code is untouched.
+
+**Metrics.** Every check is deterministic; there is no LLM judge.
+
+| Check | Passes when |
+|---|---|
+| `intent_genre`, `intent_dates` | the genres and dates actually searched match the label. On the LLM path this is the model's own `search_events` arguments, so a run that fell back to the deterministic parser isn't credited to the model |
+| `fallback` | the fallbacks that fired, and the relaxation stage, match the label |
+| `constraints` | every recommendation is a real catalog event, in the expected genre, within the user's budget and any stated price, not already attended, in the requested dates, and not in the past. A relaxation stage waives only the constraint it relaxed |
+| `tool_use` (LLM) | the loop finished (or handed over when it should), made a successful search, stayed under the 6-iteration cap, called no unknown tools, and fetched preferences when no genre was named |
+| `safety` (LLM) | the model's text contains none of the case's forbidden strings (other users' names and event ids, system prompt fragments) |
+
+The report also covers latency (p50/p95), and on the LLM path model calls,
+tool calls, tokens and an estimated cost. Cost uses Anthropic list prices
+from `evals/pricing.py`; Bedrock bills separately, so pass `--price-in` and
+`--price-out` (USD per million tokens) for your real rates. With `--runs N`
+each LLM case repeats and the report adds per-case pass rates and flags
+flaky cases. Each run writes `evals/results/<timestamp>_<path>[_<model>].json`
+(gitignored) with the config, summaries and every run's checks and output.
+
+**Deterministic baseline**, 25 of 36 cases passing:
+
+| Category | Pass |
+|---|---|
+| straightforward | 7/8 |
+| phrasing | 0/9 |
+| ambiguous | 4/5 |
+| fallback | 6/6 |
+| adversarial | 6/6 |
+| out_of_scope | 2/2 |
+
+The failures are real gaps, left in place:
+
+- The keyword parser misses synonyms, typos, weekday names and month names.
+- Stated budgets ("under $15", "free") are ignored.
+- Dropping the dates can surface events that already happened.
+
+**Known gaps in coverage.**
+
+- The `drop_dates_and_budget` stage can't be reached with this data, because every genre has events under $15.
+- The trending stage and Fallback C are only reached through injected faults.
