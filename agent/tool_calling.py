@@ -243,7 +243,7 @@ class ToolLoopOutcome:
 def _system_prompt(today: date) -> str:
     return (
         "You are the planning step of an event recommendation agent for a ticketing platform. "
-        f"Today's date is {today.isoformat()}.\n"
+        f"Today is {today.strftime('%A')}, {today.isoformat()}.\n"
         f"Valid genres: {', '.join(VALID_GENRES)}.\n\n"
         "The user is already identified. fetch_user_preferences takes no arguments and returns "
         "their favourite genres and typical budget. Their budget is applied to every search "
@@ -252,8 +252,12 @@ def _system_prompt(today: date) -> str:
         "1. If the request names a genre, use it. Otherwise call fetch_user_preferences and use "
         "the stored genres. If that lookup fails, choose the genres that best fit the request, "
         "or all genres if the request is generic.\n"
-        "2. Translate any time reference (tonight, this weekend, next week, next month) into an "
-        "ISO date range relative to today. Leave the dates unset if the request has no time reference.\n"
+        "2. Translate any time reference into an ISO date range relative to today. Weeks run "
+        "Monday to Sunday: \"this week\" is today to Sunday, \"next week\" is the following "
+        "Monday to Sunday, \"this weekend\" is the coming Saturday and Sunday (from today if it "
+        "is already the weekend), and \"next weekend\" is the Saturday and Sunday of next week. "
+        "A weekday name means its next occurrence. \"Next month\" is the whole calendar month. "
+        "Leave the dates unset if the request has no time reference.\n"
         "3. Call search_events exactly once with the final filters. Set price_max only if the "
         "request states a price limit (\"under $15\" is 15, \"free\" is 0).\n"
         "4. Do not retry with broader filters if the search returns no events; the pipeline "

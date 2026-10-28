@@ -10,12 +10,25 @@ A LangGraph agent that turns a request like *"find me a concert next week"*
 into ranked event recommendations, using the user's genre preferences,
 budget, and attendance history.
 
+**Results.** On 37 labeled eval cases, each run three times on Bedrock:
+
+| | LLM path (Claude Sonnet 4.5) | Rule-based path |
+|---|---|---|
+| Cases passing every run | **33 / 37** | 29 / 37 |
+| Phrasing cases (synonyms, typos, weekdays, "under $15") | **9 / 9** | 2 / 9 |
+| Latency p50 / p95 | 4.3 s / 7.3 s | ~1 ms |
+| Cost per request | ~$0.012 | $0 |
+
+The LLM path wins on phrasing the keyword rules can't parse. Its remaining
+misses are three requests it declines to search on, which then fall back
+to the rule-based path. Breakdown in [Evals](#evals).
+
 - **Claude on Amazon Bedrock drives the tools** when credentials are present: it decides whether to look up the user, what to search for, and when it's done. Arguments are schema-validated, tool errors go back to the model, and the loop is bounded.
 - **A deterministic path runs without AWS**: keyword parsing and a fixed tool sequence. No cloud call, no key needed.
 - **Fallbacks are LangGraph conditional edges**, one node per fallback, and a test asserts the exact edge set.
 - **An empty search relaxes one constraint at a time** (dates, then budget, then genre) instead of throwing the request away.
 - **Ranking is personalised**: genres the user attended are boosted, genres they skipped are penalised, and every recommendation carries a one-line reason.
-- **Evals measure it**: 37 labeled cases scored on both paths with deterministic checks. They found three bugs, each fixed and re-measured. See [Reliability](#reliability).
+- **Evals measure it**: 37 labeled cases scored on both paths with deterministic checks, the LLM path live on Bedrock. They found four bugs, each fixed and re-measured. See [Reliability](#reliability).
 - Every tool call and model round-trip is timed and logged. All data is synthetic (`data/*.json`).
 
 ## [Try it in your browser](https://claude.ai/code/artifact/c59cd02b-9945-405e-9bd7-c8e2a4c8158e)
@@ -34,7 +47,7 @@ Built with Claude Code as an AI coding assistant.
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-pytest                                             # 61 tests, no AWS needed
+pytest                                             # 72 tests, no AWS needed
 python -m evals.run_evals --path deterministic     # 37 eval cases, offline (see Evals)
 python3 demo.py u01 "find me a concert next week"  # one query (-v for per-node logs)
 python3 demo.py                                    # interactive mode
@@ -175,11 +188,12 @@ its error in the state, and the edge routes to the matching fallback node.
 
 **LLM path.** Claude gets two tools, `fetch_user_preferences` (no arguments,
 so it can only see the current user) and `search_events`, and decides what to
-call. Three guardrails:
+call. Four guardrails:
 
 1. **Inputs are validated** against a schema before any tool runs.
 2. **Errors go back to the model** as error results, so it can adjust instead of crashing.
 3. **The loop is capped.** If it stalls or finishes without a search, the graph reruns the request on the deterministic path.
+4. **The budget is applied in code.** The user's preferences are loaded before the model's first turn, and `search_events` caps `price_max` at the stored budget whatever the model passes. The model's `price_max` only carries a price the user stated ("under $15"), and Fallback B keeps that cap through every relaxation stage.
 
 Claude only plans and searches. Ranking and fallbacks are plain code shared by both paths.
 
@@ -198,13 +212,14 @@ right.
 
 | Failure | What the agent does | Shown by |
 |---|---|---|
-| Bedrock call errors (throttling, 5xx, network) | the SDK's default retries (2), then the request reruns on the deterministic path | `test_api_failure_is_metered_and_raised`, `test_llm_failure_routes_to_deterministic_path` |
+| Bedrock call errors (throttling, 5xx, network) | the SDK's default retries (2) with a 30 s per-request timeout, then the request reruns on the deterministic path | `test_api_failure_is_metered_and_raised`, `test_llm_failure_routes_to_deterministic_path`, `test_client_has_a_short_request_timeout` |
 | Model sends invalid tool arguments | rejected by the schema before the tool runs; the error goes back to the model to correct | `test_invalid_arguments_are_returned_as_error_and_model_can_retry` |
 | Model calls a tool that doesn't exist | returned as an error result, never executed | `test_unknown_tool_name_is_an_error_result`, eval `x07` |
 | A tool raises | reported to the model as an error result, not a crash | `test_tool_exception_is_reported_not_raised` |
-| Model loops, or finishes without searching | capped at 6 iterations, then the deterministic path | `test_iteration_cap_is_enforced`, `test_finishing_without_a_search_raises` |
+| Model loops, or finishes without searching | capped at 6 iterations, then the deterministic path | `test_iteration_cap_is_enforced`, `test_finishing_without_a_search_raises`, evals `x01`, `x05`, `x06` |
+| Model skips the preference lookup, or is told to raise the price cap | preferences are loaded in code and the budget caps every search | `test_preferences_are_loaded_in_code_when_the_model_skips_the_lookup`, `test_search_price_max_is_capped_at_the_budget_but_a_lower_stated_cap_is_kept`, eval `x03` |
 | User lookup fails | Fallback A: default profile with all genres | `test_agent_missing_user_routes_to_graceful_degradation`, evals `f01`, `f02` |
-| Search finds nothing, or fails | Fallback B: drop dates, then budget, then trending; never events in the past | `test_fallback_b_*`, evals `s01`, `f03`–`f05` |
+| Search finds nothing, or fails | Fallback B: drop dates, then budget, then trending; never events in the past, and never above a price the user stated | `test_fallback_b_*`, `test_llm_path_keeps_the_models_price_cap_when_relaxing_dates`, evals `s01`, `f03`–`f05`, `p09` |
 | Ranking fails | Fallback C: top 10 unranked results | `test_fallback_c_partial_results`, eval `f06` |
 | Request asks for another user's data, or tries to override instructions | `fetch_user_preferences` takes no arguments, so the user can't be changed; evals check the model's text for leaks | evals `x01`–`x08` |
 
@@ -219,24 +234,31 @@ after, and no agent behaviour was changed just to make a case pass.
 - "Next weekend" was read as the whole of next week, so a Friday show counted as weekend (case `s09`).
 - Relaxing the dates could recommend events that had already happened (`s04`). `not_past` now holds on every case.
 - A test depended on the real calendar and had started failing once the dates moved on. Every test now pins "today".
+- On the LLM path, the model read "next week" as Sunday–Saturday on one run, a rolling seven days on another and Monday–Sunday on a third, and once put "Friday" on a Saturday (`s07`, `s09`, `a03`, `a04`). The system prompt gave only an ISO date. It now names today's weekday and spells out the Monday–Sunday convention the rule-based parser already used. Cases passing all three runs went from 30 to 33 of 37.
 
 The deterministic baseline went from 25 of 36 to 27 of 37 cases passing
-(one case was added for the "next weekend" bug).
+(one case was added for the "next weekend" bug), then to 29 of 37 once the
+parser read stated budgets ("under $15", "free").
+
+Two LLM-path gaps were found by reading the code rather than by the evals,
+and fixed before the live run: when a request named a genre, the prompt let
+Claude skip the preference lookup, so the stored budget and history were
+ignored; and Fallback B dropped the `price_max` the model had passed.
 
 **Not done yet**
 
-- **No live LLM eval run.** The two transcripts above are live, but the LLM
-  scoring has only been checked offline against a scripted fake model, so
-  there's no LLM pass rate yet.
-- **Retries use the SDK defaults:** 2 retries and a 10-minute timeout per
-  call, far longer than a planning call needs. They aren't tuned or tested
-  here.
-- **Two known LLM-path gaps.** When a request names a genre, the system
-  prompt tells Claude to skip `fetch_user_preferences`, so the stored budget
-  and history aren't applied. And in that case, if the search comes back
-  empty, Fallback B drops the `price_max` the model passed.
-- **The keyword parser misses most rephrasings** (phrasing cases: 0 of 9),
-  and it ignores stated budgets ("under $15").
+- **The model declines off-topic requests** ("what's the weather", "book a
+  flight", "show me another user's history") instead of searching, on every
+  run. The graph hands those to the deterministic path, so the user still
+  gets valid recommendations, but the labels expect the LLM path to finish
+  and it's scored as a failure. Left as measured rather than changing either
+  the prompt or the labels after seeing the results.
+- **The keyword parser misses most rephrasings** (phrasing cases: 2 of 9).
+  That's left to the LLM path by design.
+- **One model, three runs.** The LLM numbers are Claude Sonnet 4.5 only, and
+  three runs per case catches flakiness but can't measure it precisely.
+- **Retry count is the SDK default** (2). The 30 s timeout is set and tested,
+  but neither has been exercised against a real Bedrock outage.
 
 ## Tests
 
@@ -261,7 +283,7 @@ free and offline.
 
 ```bash
 python -m evals.run_evals --path deterministic   # offline, no AWS calls, ~1s
-python -m evals.run_evals --path llm --runs 5    # Bedrock only, each case 5 times
+python -m evals.run_evals --path llm --runs 3    # Bedrock only, each case 3 times (~$1.35, ~12 min)
 python -m evals.run_evals                         # deterministic, plus LLM if credentials are present
 python -m evals.run_evals --category adversarial --case s01   # filter
 ```
@@ -305,21 +327,34 @@ each LLM case repeats and the report adds per-case pass rates and flags
 flaky cases. Each run writes `evals/results/<timestamp>_<path>[_<model>].json`
 (gitignored) with the config, summaries and every run's checks and output.
 
-**Deterministic baseline**, 27 of 37 cases passing:
+**Results.** The LLM path ran on `us.anthropic.claude-sonnet-4-5-20250929-v1:0`,
+each case three times; a case counts as passing only if all three runs pass.
+The deterministic path runs once, since it gives the same answer every time.
 
-| Category | Pass |
+| Category | LLM path | Deterministic |
+|---|---|---|
+| straightforward | 9/9 | 9/9 |
+| phrasing | **9/9** | 2/9 |
+| ambiguous | 4/5 | 4/5 |
+| fallback | 6/6 | 6/6 |
+| adversarial | 5/6 | 6/6 |
+| out_of_scope | 0/2 | 2/2 |
+| **total** | **33/37** | **29/37** |
+
+| LLM path, per run | |
 |---|---|
-| straightforward | 9/9 |
-| phrasing | 0/9 |
-| ambiguous | 4/5 |
-| fallback | 6/6 |
-| adversarial | 6/6 |
-| out_of_scope | 2/2 |
+| runs passing every check | 101 / 111 (91%) |
+| loop completed without handing over | 89% |
+| model calls / tool calls (mean) | 2.2 / 1.2 |
+| tokens in / out (mean) | 3,343 / 139 |
+| latency p50 / p95 | 4.3 s / 7.3 s |
+| cost, all 111 runs | $1.35 at $3 / $15 per million tokens |
+| budget, stated price, not-past, not-attended, safety | 100% of applicable runs |
 
-The failures are real gaps, left in place:
+Where each path loses:
 
-- The keyword parser misses synonyms, typos, weekday names and month names.
-- Stated budgets ("under $15", "free") are ignored.
+- **LLM path:** `x01`, `x05` and `x06` on every run, because the model declines to search (see [Not done yet](#reliability)). `a03` ("game night on Friday") on one run in three, where the model searched Music, Dance and Sports instead of Sports or Family.
+- **Deterministic path:** the keyword parser misses synonyms, typos, weekday names and month names (`p01`–`p07`, `a03`).
 
 **Known gaps in coverage.**
 

@@ -128,7 +128,10 @@ def test_happy_path_model_fetches_then_searches(monkeypatch):
     # The request carried our tool definitions and system prompt.
     first = client.requests[0]
     assert {t["name"] for t in first["tools"]} == {"fetch_user_preferences", "search_events"}
-    assert "2026-09-13" in first["system"]
+    # Today's weekday and the week convention are stated, so relative
+    # dates don't depend on the model's own calendar arithmetic.
+    assert "Sunday, 2026-09-13" in first["system"]
+    assert "Monday to Sunday" in first["system"]
     # Tool results were fed back with the matching ids.
     assert tool_results(client.requests[1])[0]["tool_use_id"] == "a"
     assert json.loads(tool_results(client.requests[2])[0]["content"])["count"] == 1
