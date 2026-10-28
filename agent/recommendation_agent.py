@@ -165,7 +165,8 @@ def search_events_node(state: AgentState) -> AgentState:
         genres, state.parsed_intent.date_from, state.parsed_intent.date_to,
     )
     try:
-        price_max = state.user_preferences.budget if state.user_preferences.budget > 0 else None
+        budget = state.user_preferences.budget if state.user_preferences.budget > 0 else None
+        price_max = tools.effective_price_max(state.parsed_intent.price_max, budget)
         state.search_results = tools.search_events(
             genres,
             price_max=price_max,

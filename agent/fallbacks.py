@@ -51,19 +51,25 @@ def alternative_source_fallback(state: AgentState) -> AgentState:
 
     A user who asked for "a concert next week" therefore still gets
     concerts, just on other dates, and only lands on the trending list
-    when their genres have nothing at all. The stage that produced results
-    is recorded in ``state.fallback_details["alternative_source_fallback"]``.
+    when their genres have nothing at all. A price the request stated
+    (``parsed_intent.price_max``, "under $15") is kept by every stage,
+    trending included: only the stored budget is ever relaxed. The stage
+    that produced results is recorded in
+    ``state.fallback_details["alternative_source_fallback"]``.
     """
     intent = state.parsed_intent
     genres = intent.genres or state.user_preferences.genres
     budget = state.user_preferences.budget if state.user_preferences.budget > 0 else None
+    stated = intent.price_max
     had_dates = bool(intent.date_from or intent.date_to)
 
     stages: list[tuple[str, dict]] = []
     if genres and had_dates:
-        stages.append(("drop_dates", {"genres": genres, "price_max": budget}))
-    if genres and budget is not None:
-        stages.append(("drop_dates_and_budget", {"genres": genres}))
+        stages.append(("drop_dates", {"genres": genres, "price_max": tools.effective_price_max(stated, budget)}))
+    # Dropping the budget only widens the search when the budget was the
+    # tighter cap.
+    if genres and budget is not None and (stated is None or stated > budget):
+        stages.append(("drop_dates_and_budget", {"genres": genres, "price_max": stated}))
 
     logger.warning(
         "Fallback triggered: event search returned nothing for genres=%s; relaxing via %s",
@@ -84,6 +90,8 @@ def alternative_source_fallback(state: AgentState) -> AgentState:
 
     if not results:
         events = tools.upcoming(_load_json("events.json"))
+        if stated is not None:
+            events = [e for e in events if e["price"] <= stated]
         results = sorted(events, key=lambda e: e["popularity_score"], reverse=True)[:TRENDING_LIMIT]
 
     logger.warning("alternative_source_fallback: stage %s produced %d events", stage_used, len(results))

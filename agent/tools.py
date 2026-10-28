@@ -27,6 +27,15 @@ def upcoming(events: list[dict]) -> list[dict]:
     return [e for e in events if e["date"] >= today]
 
 
+def effective_price_max(stated: float | None, budget: float | None) -> float | None:
+    """The tighter of a price cap stated in the request and the stored budget.
+
+    Either may be None (no cap of that kind); None back means no cap at all.
+    """
+    caps = [c for c in (stated, budget) if c is not None]
+    return min(caps) if caps else None
+
+
 def fetch_user_preferences(user_id: str) -> dict:
     """Look up a user's preferences by id.
 

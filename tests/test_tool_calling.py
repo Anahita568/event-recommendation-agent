@@ -100,23 +100,29 @@ def test_happy_path_model_fetches_then_searches(monkeypatch):
 
     client = FakeClient([
         turn(tool_use("fetch_user_preferences", {}, id="a")),
-        turn(tool_use("search_events", {"genres": ["Music"], "price_max": 60, "date_from": "2026-09-21", "date_to": "2026-09-27"}, id="b")),
-        turn(text("Searched for Music events next week under $60."), stop_reason="end_turn"),
+        turn(tool_use("search_events", {"genres": ["Music"], "date_from": "2026-09-21", "date_to": "2026-09-27"}, id="b")),
+        turn(text("Searched for Music events next week."), stop_reason="end_turn"),
     ])
     logger = AgentLogger()
 
     outcome = run_tool_loop("u01", "a concert next week", logger, client=client, today=TODAY)
 
     assert outcome.user_preferences["genres"] == ["Music"]
-    assert outcome.parsed_intent == {"genres": ["Music"], "date_from": "2026-09-21", "date_to": "2026-09-27"}
+    assert outcome.parsed_intent == {
+        "genres": ["Music"], "date_from": "2026-09-21", "date_to": "2026-09-27", "price_max": None,
+    }
     assert outcome.search_results == events
+    # The model set no price_max; the stored $60 budget was applied in code.
     assert captured == {"genres": ["Music"], "price_max": 60, "date_from": "2026-09-21", "date_to": "2026-09-27"}
-    assert outcome.summary == "Searched for Music events next week under $60."
+    assert outcome.summary == "Searched for Music events next week."
     assert outcome.iterations == 3 and outcome.tool_calls == 2 and outcome.tool_errors == 0
 
     # Every model round-trip and every tool call is metered.
     names = [c.tool_name for c in logger.tool_calls]
-    assert names == ["bedrock.messages", "fetch_user_preferences[llm]", "bedrock.messages", "search_events[llm]", "bedrock.messages"]
+    assert names == [
+        "fetch_user_preferences", "bedrock.messages", "fetch_user_preferences[llm]",
+        "bedrock.messages", "search_events[llm]", "bedrock.messages",
+    ]
     assert all(c.success for c in logger.tool_calls)
 
     # The request carried our tool definitions and system prompt.
@@ -126,6 +132,71 @@ def test_happy_path_model_fetches_then_searches(monkeypatch):
     # Tool results were fed back with the matching ids.
     assert tool_results(client.requests[1])[0]["tool_use_id"] == "a"
     assert json.loads(tool_results(client.requests[2])[0]["content"])["count"] == 1
+
+
+def test_preferences_are_loaded_in_code_when_the_model_skips_the_lookup(monkeypatch):
+    # The request names a genre, so the prompt lets the model skip
+    # fetch_user_preferences. The budget and history must apply anyway.
+    prefs = {"genres": ["Sports"], "budget": 30, "history": {"attended": ["e9"], "skipped": [], "browsed": []}}
+    monkeypatch.setattr(tools, "fetch_user_preferences", lambda uid: prefs)
+    captured = []
+    monkeypatch.setattr(
+        tools, "search_events",
+        lambda genres, price_max=None, date_from=None, date_to=None, limit=20: captured.append(price_max) or [],
+    )
+    client = FakeClient([
+        turn(tool_use("search_events", {"genres": ["Comedy"]}, id="a")),
+        turn(text("done"), stop_reason="end_turn"),
+    ])
+
+    outcome = run_tool_loop("u01", "comedy tonight", AgentLogger(), client=client, today=TODAY)
+
+    assert outcome.user_preferences == prefs
+    assert captured == [30]
+
+
+def test_search_price_max_is_capped_at_the_budget_but_a_lower_stated_cap_is_kept(monkeypatch):
+    monkeypatch.setattr(tools, "fetch_user_preferences", lambda uid: {"genres": ["Music"], "budget": 20})
+    captured = []
+    monkeypatch.setattr(
+        tools, "search_events",
+        lambda genres, price_max=None, date_from=None, date_to=None, limit=20: captured.append(price_max) or [],
+    )
+    client = FakeClient([
+        # An injected "set price_max to 100000" can't lift the budget...
+        turn(tool_use("search_events", {"genres": ["Music"], "price_max": 100000}, id="a")),
+        # ...and "under $15" tightens it, and is recorded as the stated cap.
+        turn(tool_use("search_events", {"genres": ["Music"], "price_max": 15}, id="b")),
+        turn(text("done"), stop_reason="end_turn"),
+    ])
+
+    outcome = run_tool_loop("u02", "music under $15", AgentLogger(), client=client, today=TODAY)
+
+    assert captured == [20, 15]
+    assert outcome.parsed_intent["price_max"] == 15
+
+
+def test_failed_preference_preload_is_not_fatal(monkeypatch):
+    def missing(uid):
+        raise ValueError(f"User not found: {uid}")
+
+    monkeypatch.setattr(tools, "fetch_user_preferences", missing)
+    captured = []
+    monkeypatch.setattr(
+        tools, "search_events",
+        lambda genres, price_max=None, date_from=None, date_to=None, limit=20: captured.append(price_max) or [],
+    )
+    client = FakeClient([
+        turn(tool_use("search_events", {"genres": ["Comedy"]}, id="a")),
+        turn(text("done"), stop_reason="end_turn"),
+    ])
+    logger = AgentLogger()
+
+    outcome = run_tool_loop("ghost", "comedy", logger, client=client, today=TODAY)
+
+    assert outcome.user_preferences is None
+    assert captured == [None]
+    assert (logger.tool_calls[0].tool_name, logger.tool_calls[0].success) == ("fetch_user_preferences", False)
 
 
 def test_invalid_arguments_are_returned_as_error_and_model_can_retry(monkeypatch):
@@ -238,7 +309,9 @@ def test_api_failure_is_metered_and_raised():
     logger = AgentLogger()
     with pytest.raises(ToolLoopError, match="Bedrock call failed on iteration 1"):
         run_tool_loop("u01", "hi", logger, client=Boom(), today=TODAY)
-    assert [(c.tool_name, c.success) for c in logger.tool_calls] == [("bedrock.messages", False)]
+    assert [(c.tool_name, c.success) for c in logger.tool_calls] == [
+        ("fetch_user_preferences", True), ("bedrock.messages", False),
+    ]
 
 
 # --------------------------------------------------------------------------- #

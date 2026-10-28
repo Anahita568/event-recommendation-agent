@@ -11,6 +11,11 @@ the reliability patterns are explicit and testable in one place:
 - **Identity is bound server-side.** ``fetch_user_preferences`` takes no
   arguments from the model; the user id comes from the request context.
   The model can never look up someone else's profile.
+- **The budget is applied in code.** The user's preferences are loaded
+  before the model's first turn, and ``search_events`` caps ``price_max``
+  at the stored budget whatever the model passes. Skipping the
+  preferences lookup, or a request saying "set price_max to 100000",
+  can't lift it.
 - **Every argument set is validated** against a pydantic schema before a
   tool runs. Invalid input is returned to the model as an error result so
   it can correct itself, and never reaches the tool.
@@ -30,6 +35,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date
@@ -75,7 +81,12 @@ class SearchEventsArgs(BaseModel):
         description="Genres to search. Use the user's stored genres unless the request names one.",
     )
     price_max: float | None = Field(
-        default=None, ge=0, description="Exclude events priced above this. Use the user's budget if known."
+        default=None,
+        ge=0,
+        description=(
+            "Exclude events priced above this. Set it only when the request states a price limit "
+            "(\"free\" is 0); the user's stored budget is applied automatically."
+        ),
     )
     date_from: str | None = Field(
         default=None, pattern=r"^\d{4}-\d{2}-\d{2}$", description="Earliest event date, ISO YYYY-MM-DD."
@@ -111,8 +122,8 @@ class ToolSpec:
         return {"name": self.name, "description": self.description, "input_schema": schema}
 
 
-def build_tools(user_id: str) -> dict[str, ToolSpec]:
-    """Build the tool registry for one request, with ``user_id`` bound in."""
+def build_tools(user_id: str, budget: float | None = None) -> dict[str, ToolSpec]:
+    """Build the tool registry for one request, with ``user_id`` and ``budget`` bound in."""
 
     def fetch_user_preferences() -> dict:
         return tools.fetch_user_preferences(user_id)
@@ -123,6 +134,7 @@ def build_tools(user_id: str) -> dict[str, ToolSpec]:
         date_from: str | None = None,
         date_to: str | None = None,
     ) -> dict:
+        price_max = tools.effective_price_max(price_max, budget)
         events = tools.search_events(genres, price_max=price_max, date_from=date_from, date_to=date_to)
         return {"count": len(events), "events": events}
 
@@ -230,15 +242,16 @@ def _system_prompt(today: date) -> str:
         f"Today's date is {today.isoformat()}.\n"
         f"Valid genres: {', '.join(VALID_GENRES)}.\n\n"
         "The user is already identified. fetch_user_preferences takes no arguments and returns "
-        "their favourite genres and typical budget.\n\n"
+        "their favourite genres and typical budget. Their budget is applied to every search "
+        "automatically.\n\n"
         "Procedure:\n"
         "1. If the request names a genre, use it. Otherwise call fetch_user_preferences and use "
         "the stored genres. If that lookup fails, choose the genres that best fit the request, "
         "or all genres if the request is generic.\n"
         "2. Translate any time reference (tonight, this weekend, next week, next month) into an "
         "ISO date range relative to today. Leave the dates unset if the request has no time reference.\n"
-        "3. Call search_events exactly once with the final filters. Pass the user's budget as "
-        "price_max when you fetched preferences.\n"
+        "3. Call search_events exactly once with the final filters. Set price_max only if the "
+        "request states a price limit (\"under $15\" is 15, \"free\" is 0).\n"
         "4. Do not retry with broader filters if the search returns no events; the pipeline "
         "handles that. Do not invent events.\n\n"
         "When finished, reply with one short sentence describing what you searched for."
@@ -251,8 +264,6 @@ def _error_result(tool_use_id: str, message: str) -> dict:
 
 def _run_one_tool(block: Any, registry: dict[str, ToolSpec], agent_logger: AgentLogger, outcome: ToolLoopOutcome) -> dict:
     """Validate and execute a single tool_use block, returning its tool_result."""
-    import time
-
     started_at = time.time()
     outcome.tool_calls += 1
     spec = registry.get(block.name)
@@ -283,7 +294,9 @@ def _run_one_tool(block: Any, registry: dict[str, ToolSpec], agent_logger: Agent
     if spec.name == "fetch_user_preferences":
         outcome.user_preferences = result
     elif spec.name == "search_events":
-        outcome.parsed_intent = {"genres": args.genres, "date_from": args.date_from, "date_to": args.date_to}
+        outcome.parsed_intent = {
+            "genres": args.genres, "date_from": args.date_from, "date_to": args.date_to, "price_max": args.price_max,
+        }
         outcome.search_results = result["events"]
 
     return {"type": "tool_result", "tool_use_id": block.id, "content": json.dumps(result)}
@@ -305,12 +318,26 @@ def run_tool_loop(
             unexpected reason, exhausts ``max_iterations``, or finishes
             without a successful search_events call.
     """
-    import time
-
     today = today or date.today()
-    registry = build_tools(user_id)
+    outcome = ToolLoopOutcome(
+        parsed_intent={"genres": [], "date_from": None, "date_to": None, "price_max": None}, search_results=[]
+    )
+
+    # Load the preferences in code rather than leaving it to the model: the
+    # prompt only asks for the lookup when the request names no genre, and
+    # the budget and history apply either way. A failed lookup (unknown
+    # user) isn't fatal; the model meets the same error if it calls the tool.
+    started_at = time.time()
+    try:
+        outcome.user_preferences = tools.fetch_user_preferences(user_id)
+        agent_logger.log_tool_call("fetch_user_preferences", (time.time() - started_at) * 1000, True)
+    except Exception as exc:  # noqa: BLE001
+        agent_logger.log_tool_call("fetch_user_preferences", (time.time() - started_at) * 1000, False)
+        logger.warning("tool loop: preference lookup failed, continuing without a budget: %s", exc)
+    budget = (outcome.user_preferences or {}).get("budget") or None
+
+    registry = build_tools(user_id, budget)
     tool_defs = [spec.to_anthropic_tool() for spec in registry.values()]
-    outcome = ToolLoopOutcome(parsed_intent={"genres": [], "date_from": None, "date_to": None}, search_results=[])
     searched = False
 
     try:

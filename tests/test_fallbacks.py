@@ -83,6 +83,49 @@ def test_fallback_b_drops_budget_second(monkeypatch):
     assert result.search_results == [{"id": "e1", "genre": "Music", "popularity_score": 1, "price": 999}]
 
 
+def test_fallback_b_keeps_a_stated_price_cap_through_every_stage(monkeypatch):
+    calls = []
+
+    def fake_search(genres, price_max=None, date_from=None, date_to=None, limit=20):
+        calls.append(price_max)
+        return []
+
+    monkeypatch.setattr(tools, "search_events", fake_search)
+    monkeypatch.setattr(fallbacks, "TRENDING_LIMIT", 1000)
+    state = AgentState(
+        user_id="u02", query="live music under $25 tonight",
+        parsed_intent=QueryIntent(genres=["Music"], date_from="2026-09-17", date_to="2026-09-17", price_max=25),
+        user_preferences=UserPreferences(genres=["Sports"], budget=20),
+    )
+    result = alternative_source_fallback(state)
+
+    # drop_dates applies the tighter of the two caps; dropping the budget
+    # falls back to the stated $25, never to no cap at all.
+    assert calls == [20, 25]
+    assert result.fallback_details["alternative_source_fallback"] == "trending"
+    assert result.search_results
+    assert all(e["price"] <= 25 for e in result.search_results)
+
+
+def test_fallback_b_skips_dropping_the_budget_when_the_stated_cap_is_tighter(monkeypatch):
+    calls = []
+
+    def fake_search(genres, price_max=None, date_from=None, date_to=None, limit=20):
+        calls.append(price_max)
+        return []
+
+    monkeypatch.setattr(tools, "search_events", fake_search)
+    state = AgentState(
+        user_id="u18", query="free comedy tonight",
+        parsed_intent=QueryIntent(genres=["Comedy"], date_from="2026-09-17", date_to="2026-09-17", price_max=0),
+        user_preferences=UserPreferences(genres=["Art"], budget=20),
+    )
+    result = alternative_source_fallback(state)
+
+    assert calls == [0]
+    assert all(e["price"] == 0 for e in result.search_results)
+
+
 def test_fallback_b_uses_stored_genres_when_query_named_none():
     state = AgentState(
         user_id="u01", query="anything next week",

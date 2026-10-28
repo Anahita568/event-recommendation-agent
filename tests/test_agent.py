@@ -1,6 +1,7 @@
 from agent import tool_calling, tools
 from agent.recommendation_agent import build_graph, invoke
 from agent.tool_calling import ToolLoopError, ToolLoopOutcome
+from tests.test_tool_calling import FakeClient, text, tool_use, turn
 
 FIXED_EVENTS = [
     {"id": "e1", "genre": "Music", "popularity_score": 10, "price": 20},
@@ -223,3 +224,44 @@ def test_llm_unavailable_reason_is_reported(monkeypatch):
 
     assert result["execution_path"] == "deterministic"
     assert result["llm_error"] == "no AWS credentials configured"
+
+
+def _scripted_model(monkeypatch, *turns):
+    monkeypatch.setattr(tool_calling, "bedrock_available", lambda: (True, None))
+    monkeypatch.setattr(tool_calling, "make_client", lambda: FakeClient(turns))
+
+
+def test_llm_path_applies_stored_budget_when_the_model_skips_the_lookup(monkeypatch):
+    # u06 has a $50 budget; October's Comedy is $75 and $150. The model
+    # names the genre and never fetches preferences, as the prompt allows.
+    _scripted_model(
+        monkeypatch,
+        turn(tool_use("search_events", {"genres": ["Comedy"], "date_from": "2026-10-01", "date_to": "2026-10-31"})),
+        turn(text("Searched Comedy in October."), stop_reason="end_turn"),
+    )
+
+    result = invoke("u06", "comedy next month")
+
+    assert result["execution_path"] == "llm_tools"
+    assert result["fallback_details"] == {"alternative_source_fallback": "drop_dates"}
+    assert result["recommendations"]
+    assert all(e["genre"] == "Comedy" and e["price"] <= 50 for e in result["recommendations"])
+    # History applied too: u06 has attended Comedy, so the ranking says so.
+    assert all("attended" in e["rank_reason"] for e in result["recommendations"])
+
+
+def test_llm_path_keeps_the_models_price_cap_when_relaxing_dates(monkeypatch):
+    # No Comedy on 09-17, so the dates are dropped; "free" must survive that.
+    _scripted_model(
+        monkeypatch,
+        turn(tool_use("search_events", {
+            "genres": ["Comedy"], "price_max": 0, "date_from": "2026-09-17", "date_to": "2026-09-17",
+        })),
+        turn(text("Searched free Comedy tonight."), stop_reason="end_turn"),
+    )
+
+    result = invoke("u18", "free comedy tonight, I'm broke")
+
+    assert result["parsed_intent"]["price_max"] == 0
+    assert result["fallback_details"] == {"alternative_source_fallback": "drop_dates"}
+    assert {e["id"] for e in result["recommendations"]} == {"e108", "e019"}

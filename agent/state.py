@@ -19,6 +19,9 @@ class QueryIntent(BaseModel):
     genres: list[str] = Field(default_factory=list)
     date_from: str | None = None
     date_to: str | None = None
+    # A price cap the request itself stated ("under $15", "free"), as
+    # opposed to the stored budget. Fallback B never relaxes it.
+    price_max: float | None = None
 
 
 class AgentState(BaseModel):
