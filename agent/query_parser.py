@@ -43,9 +43,30 @@ def _keyword_pattern(keywords: list[str]) -> re.Pattern:
 
 GENRE_PATTERNS = {genre: _keyword_pattern(keywords) for genre, keywords in GENRE_KEYWORDS.items()}
 
+# A stated price cap: "under $15", "less than 20 dollars", "$30 or less".
+# An amount needs a "$" or a currency word, so "under 18" (an age) isn't read
+# as a price.
+_AMOUNT = r"(?:\$\s*(\d+(?:\.\d+)?)|(\d+(?:\.\d+)?)\s*(?:dollars|bucks))"
+PRICE_CAP_PATTERNS = [
+    re.compile(rf"\b(?:under|below|less than|cheaper than|up to|no more than|at most|max(?:imum)?)\s+{_AMOUNT}"),
+    re.compile(rf"{_AMOUNT}\s+(?:or less|or under|max)\b"),
+]
+# "free" as a price, but not as availability ("I'm free tonight", "free time").
+FREE_PATTERN = re.compile(r"\bfree\b(?!\s+(?:time|tonight|today|tomorrow|this|next|on|to|for|after)\b)")
+
 
 def _empty_intent() -> dict:
-    return {"genres": [], "date_from": None, "date_to": None}
+    return {"genres": [], "date_from": None, "date_to": None, "price_max": None}
+
+
+def _stated_price_max(text: str) -> float | None:
+    """The price cap the request states, or None if it states none."""
+    if FREE_PATTERN.search(text):
+        return 0.0
+    for pattern in PRICE_CAP_PATTERNS:
+        if match := pattern.search(text):
+            return float(next(g for g in match.groups() if g is not None))
+    return None
 
 
 def _week_bounds(d: date) -> tuple[date, date]:
@@ -60,7 +81,7 @@ def _month_bounds(d: date) -> tuple[date, date]:
 
 
 def parse_query_rule_based(query: str, today: date | None = None) -> dict:
-    """Extract genres and a date range from free text using keyword matching.
+    """Extract genres, a date range and a stated price cap from free text using keyword matching.
 
     Args:
         query: The user's free-text request.
@@ -68,8 +89,9 @@ def parse_query_rule_based(query: str, today: date | None = None) -> dict:
             "next week". Defaults to the current date.
 
     Returns:
-        A dict with genres (list, possibly empty), date_from, and date_to
-        (ISO date strings, or None if the query has no time reference).
+        A dict with genres (list, possibly empty), date_from and date_to
+        (ISO date strings, or None if the query has no time reference), and
+        price_max (a stated cap such as "under $15" or "free", else None).
     """
     today = today or date.today()
     text = query.lower()
@@ -78,6 +100,8 @@ def parse_query_rule_based(query: str, today: date | None = None) -> dict:
     for genre, pattern in GENRE_PATTERNS.items():
         if pattern.search(text):
             intent["genres"].append(genre)
+
+    intent["price_max"] = _stated_price_max(text)
 
     if "tonight" in text or "today" in text:
         intent["date_from"] = intent["date_to"] = today.isoformat()

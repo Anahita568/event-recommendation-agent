@@ -55,3 +55,22 @@ def test_rule_based_next_weekend_is_saturday_and_sunday_of_next_week():
     # "next week" still means the whole of next week.
     intent = query_parser.parse_query_rule_based("comedy next week", today=date(2026, 9, 17))
     assert (intent["date_from"], intent["date_to"]) == ("2026-09-21", "2026-09-27")
+
+
+def test_rule_based_stated_price_caps():
+    cases = {
+        "live music under $15 this month": 15,
+        "comedy for less than 20 dollars": 20,
+        "a play, $30 or less": 30,
+        "art below $12.50": 12.5,
+        "free comedy tonight, I'm broke": 0,
+        "any free concerts?": 0,
+    }
+    for query, cap in cases.items():
+        assert query_parser.parse_query_rule_based(query, today=date(2026, 9, 14))["price_max"] == cap, query
+
+
+def test_rule_based_ignores_non_price_numbers_and_free_as_availability():
+    for query in ("a family show for kids under 10", "I'm free tonight, any comedy?", "music in my free time", "comedy"):
+        assert query_parser.parse_query_rule_based(query, today=date(2026, 9, 14))["price_max"] is None, query
+

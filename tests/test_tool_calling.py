@@ -350,3 +350,24 @@ def test_bedrock_can_be_forced_off(monkeypatch):
     monkeypatch.setenv("AWS_ACCESS_KEY_ID", "fake-key")
     monkeypatch.setenv("EVENT_AGENT_LLM", "off")
     assert real_bedrock_available() == (False, "EVENT_AGENT_LLM=off")
+
+
+# --------------------------------------------------------------------------- #
+# Client construction
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize("model_id, client_class", [
+    ("us.anthropic.claude-sonnet-4-5-20250929-v1:0", "AnthropicBedrock"),
+    ("anthropic.claude-opus-5", "AnthropicBedrockMantle"),
+])
+def test_client_has_a_short_request_timeout(monkeypatch, model_id, client_class):
+    import anthropic
+
+    created = {}
+    monkeypatch.setattr(anthropic, client_class, lambda **kwargs: created.update(kwargs) or "client")
+    monkeypatch.setattr(tool_calling, "BEDROCK_MODEL_ID", model_id)
+
+    assert tool_calling.make_client() == "client"
+    assert created["timeout"] == tool_calling.REQUEST_TIMEOUT_S == 30.0
+

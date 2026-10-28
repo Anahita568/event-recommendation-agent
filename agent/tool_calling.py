@@ -54,6 +54,10 @@ BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-opus-5")
 BEDROCK_REGION = os.environ.get("AWS_REGION", "us-east-1")
 MAX_ITERATIONS = 6
 MAX_TOKENS = 1024
+# Per-request timeout for the Bedrock client, in seconds. A planning call
+# takes a few seconds; the SDK default of 10 minutes would leave a stalled
+# request hanging long after the deterministic path could have answered.
+REQUEST_TIMEOUT_S = 30.0
 
 Genre = Literal[tuple(VALID_GENRES)]  # type: ignore[valid-type]
 
@@ -212,11 +216,11 @@ def make_client():
     if is_legacy:
         from anthropic import AnthropicBedrock
 
-        return AnthropicBedrock(aws_region=BEDROCK_REGION)
+        return AnthropicBedrock(aws_region=BEDROCK_REGION, timeout=REQUEST_TIMEOUT_S)
 
     from anthropic import AnthropicBedrockMantle
 
-    return AnthropicBedrockMantle(aws_region=BEDROCK_REGION)
+    return AnthropicBedrockMantle(aws_region=BEDROCK_REGION, timeout=REQUEST_TIMEOUT_S)
 
 
 # --------------------------------------------------------------------------- #
